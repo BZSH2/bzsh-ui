@@ -2,7 +2,7 @@
 
 一个基于 Vue 3 + TypeScript 的组件库工程骨架。
 
-## 已有组件
+## 开始使用
 
-- [Button 按钮](./components/button)
-- [Scroll 滚动容器](./components/scroll)
+- 查看 [快速开始](./guide/getting-started) 了解接入方式
+- 通过文档站顶部导航或左侧侧边栏浏览组件列表

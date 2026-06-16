@@ -7,13 +7,11 @@ const __dirname = path.dirname(__filename)
 const repoRoot = path.resolve(__dirname, '..')
 
 const componentsIndexPath = path.join(repoRoot, 'packages/components/index.ts')
-const defaultsPath = path.join(repoRoot, 'packages/bzsh-ui/defaults.ts')
+const metadataPath = path.join(repoRoot, 'packages/components/metadata.ts')
 const themeIndexPath = path.join(
   repoRoot,
   'packages/theme-chalk/src/index.scss'
 )
-const docsConfigPath = path.join(repoRoot, 'docs/.vitepress/config.ts')
-const docsIndexPath = path.join(repoRoot, 'docs/index.md')
 
 function printUsage() {
   console.log(`Usage:
@@ -103,83 +101,13 @@ function removeStyleUseLine(source, kebabName) {
     .replace(/\n{3,}/g, '\n\n')
 }
 
-function getRemainingComponentNames(source, removedName) {
-  const match = source.match(/import\s+\{([^}]+)\}\s+from\s+'\.\.\/components'/)
-
-  if (!match) {
-    return []
-  }
-
-  return match[1]
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean)
-    .filter((item) => item !== removedName)
-}
-
-function updateDefaults(source, componentName) {
-  const remainingNames = getRemainingComponentNames(source, componentName)
-
-  if (remainingNames.length === 0) {
-    return source
-      .replace(/import\s+\{[^}]+\}\s+from\s+'\.\.\/components'\n\n/, '')
-      .replace(
-        /export const defaultComponents = \[[^\]]*\]/,
-        'export const defaultComponents = []'
-      )
-  }
-
-  return source
-    .replace(
-      /import\s+\{[^}]+\}\s+from\s+'\.\.\/components'/,
-      `import { ${remainingNames.join(', ')} } from '../components'`
-    )
-    .replace(
-      /export const defaultComponents = \[[^\]]*\]/,
-      `export const defaultComponents = [${remainingNames.join(', ')}]`
-    )
-}
-
-function getFirstRemainingKebab(componentsIndexSource, removedKebabName) {
-  const matches = [
-    ...componentsIndexSource.matchAll(/export \* from '\.\/([^']+)'/g)
-  ]
-  const remaining = matches
-    .map((match) => match[1])
-    .filter((name) => name !== removedKebabName)
-
-  return remaining[0]
-}
-
-function updateDocsConfig(source, kebabName, nextNavKebabName) {
-  const nextNavLink = nextNavKebabName
-    ? `/components/${nextNavKebabName}`
-    : '/guide/getting-started'
-
-  const removedComponentLink = `/components/${kebabName}`
-
-  let result = source.replace(
-    /(\{ text: '组件', link: ')[^']+(' \})/,
-    `$1${nextNavLink}$2`
+function removeMetadataEntry(source, kebabName) {
+  const blockPattern = new RegExp(
+    `\\s*\\{\\n\\s*exportName: 'Bz[^']+',\\n\\s*kebabName: '${kebabName}'\\n\\s*\\},?\\n?`,
+    'g'
   )
 
-  result = result
-    .split('\n')
-    .filter((line) => !line.includes(`link: '${removedComponentLink}'`))
-    .join('\n')
-    .replace(/\n{3,}/g, '\n\n')
-
-  result = result.replace(/,\s*\]/g, '\n          ]')
-
-  return result
-}
-
-function removeDocsIndexEntry(source, kebabName) {
-  return source
-    .split('\n')
-    .filter((line) => !line.includes(`(./components/${kebabName})`))
-    .join('\n')
-    .replace(/\n{3,}/g, '\n\n')
+  return source.replace(blockPattern, '\n').replace(/\n{3,}/g, '\n\n')
 }
 
 async function main() {
@@ -204,27 +132,15 @@ async function main() {
   }
 
   const componentsIndexSource = await readFile(componentsIndexPath, 'utf8')
-  const defaultsSource = await readFile(defaultsPath, 'utf8')
+  const metadataSource = await readFile(metadataPath, 'utf8')
   const themeIndexSource = await readFile(themeIndexPath, 'utf8')
-  const docsConfigSource = await readFile(docsConfigPath, 'utf8')
-  const docsIndexSource = await readFile(docsIndexPath, 'utf8')
 
   const nextComponentsIndex = removeLine(
     componentsIndexSource,
     `export * from './${meta.kebabName}'`
   )
-  const nextDefaults = updateDefaults(defaultsSource, meta.componentName)
+  const nextMetadata = removeMetadataEntry(metadataSource, meta.kebabName)
   const nextThemeIndex = removeStyleUseLine(themeIndexSource, meta.kebabName)
-  const nextNavKebabName = getFirstRemainingKebab(
-    componentsIndexSource,
-    meta.kebabName
-  )
-  const nextDocsConfig = updateDocsConfig(
-    docsConfigSource,
-    meta.kebabName,
-    nextNavKebabName
-  )
-  const nextDocsIndex = removeDocsIndexEntry(docsIndexSource, meta.kebabName)
 
   const deleteTargets = [componentRoot]
 
@@ -243,10 +159,8 @@ async function main() {
       console.log(`Delete: ${path.relative(repoRoot, target)}`)
     })
     console.log(`Update: ${path.relative(repoRoot, componentsIndexPath)}`)
-    console.log(`Update: ${path.relative(repoRoot, defaultsPath)}`)
+    console.log(`Update: ${path.relative(repoRoot, metadataPath)}`)
     console.log(`Update: ${path.relative(repoRoot, themeIndexPath)}`)
-    console.log(`Update: ${path.relative(repoRoot, docsConfigPath)}`)
-    console.log(`Update: ${path.relative(repoRoot, docsIndexPath)}`)
     return
   }
 
@@ -255,20 +169,16 @@ async function main() {
   )
 
   await writeFile(componentsIndexPath, nextComponentsIndex, 'utf8')
-  await writeFile(defaultsPath, nextDefaults, 'utf8')
+  await writeFile(metadataPath, nextMetadata, 'utf8')
   await writeFile(themeIndexPath, nextThemeIndex, 'utf8')
-  await writeFile(docsConfigPath, nextDocsConfig, 'utf8')
-  await writeFile(docsIndexPath, nextDocsIndex, 'utf8')
 
   console.log(`Deleted component: ${meta.componentName}`)
   deleteTargets.forEach((target) => {
     console.log(`- ${path.relative(repoRoot, target)}`)
   })
   console.log('Updated: packages/components/index.ts')
-  console.log('Updated: packages/bzsh-ui/defaults.ts')
+  console.log('Updated: packages/components/metadata.ts')
   console.log('Updated: packages/theme-chalk/src/index.scss')
-  console.log('Updated: docs/.vitepress/config.ts')
-  console.log('Updated: docs/index.md')
 }
 
 main().catch((error) => {

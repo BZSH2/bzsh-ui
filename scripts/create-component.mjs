@@ -7,11 +7,12 @@ const __dirname = path.dirname(__filename)
 const repoRoot = path.resolve(__dirname, '..')
 
 const componentsIndexPath = path.join(repoRoot, 'packages/components/index.ts')
-const defaultsPath = path.join(repoRoot, 'packages/bzsh-ui/defaults.ts')
+const metadataPath = path.join(repoRoot, 'packages/components/metadata.ts')
 const themeIndexPath = path.join(
   repoRoot,
   'packages/theme-chalk/src/index.scss'
 )
+const testsDir = path.join(repoRoot, 'tests')
 
 function printUsage() {
   console.log(`Usage:
@@ -129,6 +130,36 @@ function buildStyleTemplate(meta) {
 `
 }
 
+function buildTestTemplate(meta) {
+  return `import { mount } from '@vue/test-utils'
+import { describe, expect, it, vi } from 'vitest'
+
+import { ${meta.componentName} } from '../packages/components'
+
+describe('${meta.componentName}', () => {
+  it('renders label text', () => {
+    const wrapper = mount(${meta.componentName}, {
+      props: {
+        label: '${meta.pascalName}'
+      }
+    })
+
+    expect(wrapper.text()).toContain('${meta.pascalName}')
+  })
+
+  it('installs component on app', () => {
+    const app = {
+      component: vi.fn()
+    }
+
+    ${meta.componentName}.install?.(app as never)
+
+    expect(app.component).toHaveBeenCalledWith('${meta.componentName}', ${meta.componentName})
+  })
+})
+`
+}
+
 function getStyleNamespace(kebabName) {
   return `${kebabName.replace(/-/g, '_')}_style`
 }
@@ -143,47 +174,21 @@ function addExportIfMissing(source, kebabName) {
   return source.trimEnd() + `\n${exportLine}\n`
 }
 
-function updateDefaults(source, componentName) {
-  const importMatch = source.match(
-    /import\s+\{([^}]+)\}\s+from\s+'\.\.\/components'/
+function addMetadataIfMissing(source, meta) {
+  if (source.includes(`kebabName: '${meta.kebabName}'`)) {
+    return source
+  }
+
+  const entry = `  {\n    exportName: '${meta.componentName}',\n    kebabName: '${meta.kebabName}'\n  }`
+
+  return source.replace(
+    /export const componentMetadata: ComponentMeta\[\] = \[([\s\S]*?)\n\]/,
+    (match, content) => {
+      const trimmed = content.trimEnd()
+      const nextContent = trimmed ? `${trimmed},\n${entry}` : `\n${entry}`
+      return `export const componentMetadata: ComponentMeta[] = [${nextContent}\n]`
+    }
   )
-  const componentsMatch = source.match(
-    /export const defaultComponents = \[([^\]]*)\]/
-  )
-
-  if (!importMatch || !componentsMatch) {
-    throw new Error(
-      'Failed to update packages/bzsh-ui/defaults.ts automatically.'
-    )
-  }
-
-  const importNames = importMatch[1]
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean)
-
-  if (!importNames.includes(componentName)) {
-    importNames.push(componentName)
-  }
-
-  const componentNames = componentsMatch[1]
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean)
-
-  if (!componentNames.includes(componentName)) {
-    componentNames.push(componentName)
-  }
-
-  return source
-    .replace(
-      /import\s+\{([^}]+)\}\s+from\s+'\.\.\/components'/,
-      `import { ${importNames.join(', ')} } from '../components'`
-    )
-    .replace(
-      /export const defaultComponents = \[([^\]]*)\]/,
-      `export const defaultComponents = [${componentNames.join(', ')}]`
-    )
 }
 
 function addStyleUseIfMissing(source, kebabName) {
@@ -206,6 +211,7 @@ async function main() {
   )
   const srcDir = path.join(componentRoot, 'src')
   const styleDir = path.join(componentRoot, 'style')
+  const testFilePath = path.join(testsDir, `${meta.kebabName}.spec.ts`)
 
   if (await pathExists(componentRoot)) {
     throw new Error(
@@ -214,14 +220,14 @@ async function main() {
   }
 
   const componentIndexSource = await readFile(componentsIndexPath, 'utf8')
-  const defaultsSource = await readFile(defaultsPath, 'utf8')
+  const metadataSource = await readFile(metadataPath, 'utf8')
   const themeIndexSource = await readFile(themeIndexPath, 'utf8')
 
   const nextComponentIndex = addExportIfMissing(
     componentIndexSource,
     meta.kebabName
   )
-  const nextDefaults = updateDefaults(defaultsSource, meta.componentName)
+  const nextMetadata = addMetadataIfMissing(metadataSource, meta)
   const nextThemeIndex = addStyleUseIfMissing(themeIndexSource, meta.kebabName)
 
   const outputs = [
@@ -240,6 +246,10 @@ async function main() {
     {
       path: path.join(styleDir, 'index.scss'),
       content: buildStyleTemplate(meta)
+    },
+    {
+      path: testFilePath,
+      content: buildTestTemplate(meta)
     }
   ]
 
@@ -252,20 +262,21 @@ async function main() {
       console.log(`Create: ${path.relative(repoRoot, output.path)}`)
     })
     console.log(`Update: ${path.relative(repoRoot, componentsIndexPath)}`)
-    console.log(`Update: ${path.relative(repoRoot, defaultsPath)}`)
+    console.log(`Update: ${path.relative(repoRoot, metadataPath)}`)
     console.log(`Update: ${path.relative(repoRoot, themeIndexPath)}`)
     return
   }
 
   await mkdir(srcDir, { recursive: true })
   await mkdir(styleDir, { recursive: true })
+  await mkdir(testsDir, { recursive: true })
 
   await Promise.all(
     outputs.map((output) => writeFile(output.path, output.content, 'utf8'))
   )
 
   await writeFile(componentsIndexPath, nextComponentIndex, 'utf8')
-  await writeFile(defaultsPath, nextDefaults, 'utf8')
+  await writeFile(metadataPath, nextMetadata, 'utf8')
   await writeFile(themeIndexPath, nextThemeIndex, 'utf8')
 
   console.log(`Created component scaffold: ${meta.componentName}`)
@@ -273,10 +284,11 @@ async function main() {
   console.log(
     `- packages/components/${meta.kebabName}/src/${meta.kebabName}.vue`
   )
+  console.log(`- tests/${meta.kebabName}.spec.ts`)
   console.log(`- packages/components/${meta.kebabName}/index.ts`)
   console.log(`- packages/components/${meta.kebabName}/style/index.scss`)
   console.log(`Updated: packages/components/index.ts`)
-  console.log(`Updated: packages/bzsh-ui/defaults.ts`)
+  console.log(`Updated: packages/components/metadata.ts`)
   console.log(`Updated: packages/theme-chalk/src/index.scss`)
 }
 

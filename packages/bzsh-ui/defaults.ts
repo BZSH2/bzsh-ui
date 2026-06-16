@@ -1,3 +1,17 @@
-import { BzButton, BzScroll } from '../components'
+import type { Plugin } from 'vue'
 
-export const defaultComponents = [BzButton, BzScroll]
+import * as components from '../components'
+import { componentMetadata } from '../components/metadata'
+
+function isPlugin(value: unknown): value is Plugin {
+  return (
+    (typeof value === 'object' || typeof value === 'function') &&
+    value !== null &&
+    'install' in value &&
+    typeof value.install === 'function'
+  )
+}
+
+export const defaultComponents = componentMetadata
+  .map(({ exportName }) => components[exportName as keyof typeof components])
+  .filter(isPlugin)
