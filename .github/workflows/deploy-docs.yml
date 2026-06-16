@@ -1,0 +1,64 @@
+name: Deploy Docs
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'docs/**'
+      - 'packages/**'
+  workflow_dispatch:
+
+jobs:
+  deploy-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Docs
+        run: pnpm run build:docs
+
+      - name: Create Archive
+        run: |
+          cd docs/.vitepress/dist
+          tar -czf /tmp/bzsh-ui-docs.tar.gz .
+
+      - name: Copy to Server
+        env:
+          DEPLOY_HOST: 8.133.21.62
+          DEPLOY_PORT: 22
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          scp -P $DEPLOY_PORT -o StrictHostKeyChecking=no \
+            /tmp/bzsh-ui-docs.tar.gz \
+            root@$DEPLOY_HOST:/opt/bzsh-ui/deploy/incoming.tar.gz
+
+      - name: Deploy on Server
+        env:
+          DEPLOY_HOST: 8.133.21.62
+          DEPLOY_PORT: 22
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          ssh -p $DEPLOY_PORT -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key \
+            root@$DEPLOY_HOST \
+            'BUILD_ARCHIVE_PATH=/opt/bzsh-ui/deploy/incoming.tar.gz \
+             DEPLOY_PATH=/opt/bzsh-ui \
+             bash /opt/bzsh-ui/deploy/deploy.sh'
