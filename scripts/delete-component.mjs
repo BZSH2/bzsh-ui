@@ -93,6 +93,16 @@ function removeLine(source, line) {
     .replace(/\n{3,}/g, '\n\n')
 }
 
+function removeStyleUseLine(source, kebabName) {
+  return source
+    .split('\n')
+    .filter(
+      (line) => !line.includes(`../../components/${kebabName}/style/index'`)
+    )
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+}
+
 function getRemainingComponentNames(source, removedName) {
   const match = source.match(/import\s+\{([^}]+)\}\s+from\s+'\.\.\/components'/)
 
@@ -204,10 +214,7 @@ async function main() {
     `export * from './${meta.kebabName}'`
   )
   const nextDefaults = updateDefaults(defaultsSource, meta.componentName)
-  const nextThemeIndex = removeLine(
-    themeIndexSource,
-    `@use '../../components/${meta.kebabName}/style/index';`
-  )
+  const nextThemeIndex = removeStyleUseLine(themeIndexSource, meta.kebabName)
   const nextNavKebabName = getFirstRemainingKebab(
     componentsIndexSource,
     meta.kebabName

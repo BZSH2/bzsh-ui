@@ -1,5 +1,5 @@
-@use '../../components/scroll/style/index';
-@use '../../components/button/style/index';
+@use '../../components/scroll/style/index' as scroll-style;
+@use '../../components/button/style/index' as button-style;
 
 :root {
   --bz-color-white: #fff;

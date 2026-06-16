@@ -129,6 +129,10 @@ function buildStyleTemplate(meta) {
 `
 }
 
+function getStyleNamespace(kebabName) {
+  return `${kebabName.replace(/-/g, '_')}_style`
+}
+
 function addExportIfMissing(source, kebabName) {
   const exportLine = `export * from './${kebabName}'`
 
@@ -183,7 +187,7 @@ function updateDefaults(source, componentName) {
 }
 
 function addStyleUseIfMissing(source, kebabName) {
-  const useLine = `@use '../../components/${kebabName}/style/index';`
+  const useLine = `@use '../../components/${kebabName}/style/index' as ${getStyleNamespace(kebabName)};`
 
   if (source.includes(useLine)) {
     return source
