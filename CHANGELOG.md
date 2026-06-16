@@ -1,5 +1,11 @@
 # bzsh-ui
 
+## 0.1.2
+
+### Patch Changes
+
+- fix: 测试自动发布
+
 ## 0.1.1
 
 ### Patch Changes
