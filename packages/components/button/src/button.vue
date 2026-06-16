@@ -1,18 +1,22 @@
 <template>
-  <button
+  <ElButton
     class="bz-button"
-    :class="buttonClasses"
+    :type="buttonType"
+    :size="buttonSize"
     :disabled="disabled"
-    type="button"
+    :plain="plain"
+    :round="round"
+    :circle="circle"
     @click="handleClick"
   >
     <span class="bz-button__content">
       <slot>{{ label }}</slot>
     </span>
-  </button>
+  </ElButton>
 </template>
 
 <script setup lang="ts">
+import { ElButton } from 'element-plus'
 import { computed } from 'vue'
 
 import type { ButtonProps } from '../props'
@@ -31,14 +35,10 @@ const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
 
-const buttonClasses = computed(() => ({
-  [`bz-button--${props.type}`]: props.type,
-  [`bz-button--${props.size}`]: props.size,
-  'is-disabled': props.disabled,
-  'is-plain': props.plain,
-  'is-round': props.round,
-  'is-circle': props.circle
-}))
+const buttonType = computed(() => props.type)
+const buttonSize = computed(() =>
+  props.size === 'medium' ? 'default' : props.size
+)
 
 const handleClick = (event: MouseEvent) => {
   if (props.disabled) {

@@ -1,7 +1,7 @@
-import type { Plugin } from 'vue'
-
 import * as components from '../components'
 import { componentMetadata } from '../components/metadata'
+
+import type { Plugin } from 'vue'
 
 function isPlugin(value: unknown): value is Plugin {
   return (
