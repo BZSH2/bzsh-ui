@@ -1,5 +1,11 @@
 # bzsh-ui
 
+## 0.1.3
+
+### Patch Changes
+
+- Merge pull request #1 from BZSH2/feat/docs-deploy
+
 ## 0.1.2
 
 ### Patch Changes
