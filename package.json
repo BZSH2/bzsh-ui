@@ -41,6 +41,7 @@
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
     "changeset": "changeset",
     "changeset:auto": "node ./scripts/create-changeset.mjs",
+    "component": "node ./scripts/create-component.mjs",
     "version-packages": "changeset version",
     "release": "changeset publish"
   },

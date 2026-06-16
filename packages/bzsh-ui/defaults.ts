@@ -1,3 +1,3 @@
-import { BzButton } from '../components'
+import { BzButton, BzScroll } from '../components'
 
-export const defaultComponents = [BzButton]
+export const defaultComponents = [BzButton, BzScroll]

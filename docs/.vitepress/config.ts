@@ -18,7 +18,10 @@ export default defineConfig({
       '/components/': [
         {
           text: '组件',
-          items: [{ text: 'Button 按钮', link: '/components/button' }]
+          items: [
+            { text: 'Button 按钮', link: '/components/button' },
+            { text: 'Scroll 滚动容器', link: '/components/scroll' }
+          ]
         }
       ]
     }
