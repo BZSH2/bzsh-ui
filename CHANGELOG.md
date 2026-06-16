@@ -1,5 +1,11 @@
 # bzsh-ui
 
+## 0.1.4
+
+### Patch Changes
+
+- feat: 优化文件
+
 ## 0.1.3
 
 ### Patch Changes
