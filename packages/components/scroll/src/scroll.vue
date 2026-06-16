@@ -1,5 +1,6 @@
 <template>
   <div class="bz-scroll">
+    测试自动发布
     <slot>{{ label }}</slot>
   </div>
 </template>
