@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "types": ["node", "vitest/globals"]
+  },
+  "include": [
+    "packages/**/*.ts",
+    "packages/**/*.d.ts",
+    "packages/**/*.vue",
+    "play/**/*.ts",
+    "play/**/*.vue",
+    "tests/**/*.ts",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "eslint.config.mjs",
+    "docs/.vitepress/config.ts"
+  ]
+}

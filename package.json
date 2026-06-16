@@ -1,0 +1,97 @@
+{
+  "name": "bzsh-ui",
+  "version": "0.1.0",
+  "private": false,
+  "packageManager": "pnpm@10.32.1",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/types/bzsh-ui/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/types/bzsh-ui/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./style.css": "./dist/style/bzsh-ui.css"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "dev": "pnpm --filter @bzsh-ui/play dev",
+    "dev:docs": "pnpm --filter @bzsh-ui/docs docs:dev",
+    "build": "pnpm run build:lib && pnpm run build:docs",
+    "build:lib": "vite build",
+    "build:docs": "pnpm --filter @bzsh-ui/docs docs:build",
+    "test": "vitest run",
+    "lint": "pnpm run lint:eslint && pnpm run lint:stylelint",
+    "lint:eslint": "eslint .",
+    "lint:stylelint": "stylelint \"**/*.{vue,scss,css}\" --allow-empty-input",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "vue-tsc -p tsconfig.json --noEmit",
+    "changeset": "changeset",
+    "changeset:auto": "node ./scripts/create-changeset.mjs",
+    "version-packages": "changeset version",
+    "release": "npm publish --access public"
+  },
+  "lint-staged": {
+    "*.{js,cjs,mjs,ts,mts,cts,vue}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{css,scss,vue}": [
+      "stylelint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.5",
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
+    "@eslint/js": "^9.29.0",
+    "@types/node": "^24.0.4",
+    "@typescript-eslint/eslint-plugin": "^8.34.1",
+    "@typescript-eslint/parser": "^8.34.1",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@vue/test-utils": "^2.4.6",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "eslint-plugin-vue": "^10.2.0",
+    "globals": "^16.2.0",
+    "husky": "^9.1.7",
+    "jsdom": "^26.1.0",
+    "lint-staged": "^16.1.2",
+    "postcss-html": "^1.8.0",
+    "prettier": "^3.6.2",
+    "sass": "^1.89.2",
+    "stylelint": "^16.20.0",
+    "stylelint-config-html": "^1.1.0",
+    "stylelint-config-recess-order": "^7.2.0",
+    "stylelint-config-standard-scss": "^15.0.1",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.0",
+    "vite-plugin-dts": "^4.5.4",
+    "vitepress": "^1.6.3",
+    "vitest": "^3.2.4",
+    "vue": "^3.5.17",
+    "vue-eslint-parser": "^10.1.3",
+    "vue-tsc": "^3.0.1"
+  }
+}

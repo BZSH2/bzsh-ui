@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": false,
+    "emitDeclarationOnly": false,
+    "outDir": "dist/types"
+  },
+  "include": ["packages/**/*.ts", "packages/**/*.vue"]
+}
