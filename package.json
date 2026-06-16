@@ -42,7 +42,7 @@
     "changeset": "changeset",
     "changeset:auto": "node ./scripts/create-changeset.mjs",
     "version-packages": "changeset version",
-    "release": "npm publish --access public"
+    "release": "changeset publish"
   },
   "lint-staged": {
     "*.{js,cjs,mjs,ts,mts,cts,vue}": [
