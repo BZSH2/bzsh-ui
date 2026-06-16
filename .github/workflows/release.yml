@@ -44,6 +44,19 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Auto Create Changeset
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          count=$(find .changeset -maxdepth 1 -name '*.md' ! -name 'README.md' | wc -l)
+          if [ "$count" -eq 0 ]; then
+            summary=$(printf '%s\n' "$COMMIT_MESSAGE" | head -n 1)
+            if [ -z "$summary" ]; then
+              summary="chore: automated release"
+            fi
+            pnpm changeset:auto patch "$summary"
+          fi
+
       - name: Detect Changesets
         id: detect_changesets
         run: |
