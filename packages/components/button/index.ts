@@ -1,5 +1,5 @@
 import Button from './src/button.vue'
-import { withInstall } from '../../utils/with-install'
+import { withInstall } from '../../internal/with-install'
 
 export const BzButton = withInstall(Button, 'BzButton')
 

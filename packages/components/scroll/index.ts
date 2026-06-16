@@ -1,5 +1,5 @@
 import Scroll from './src/scroll.vue'
-import { withInstall } from '../../utils/with-install'
+import { withInstall } from '../../internal/with-install'
 
 export const BzScroll = withInstall(Scroll, 'BzScroll')
 

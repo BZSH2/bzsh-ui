@@ -8,17 +8,20 @@ const repoRoot = path.resolve(__dirname, '..')
 
 const componentsIndexPath = path.join(repoRoot, 'packages/components/index.ts')
 const defaultsPath = path.join(repoRoot, 'packages/bzsh-ui/defaults.ts')
-const themeIndexPath = path.join(repoRoot, 'packages/theme-chalk/src/index.scss')
+const themeIndexPath = path.join(
+  repoRoot,
+  'packages/theme-chalk/src/index.scss'
+)
 
 function printUsage() {
   console.log(`Usage:
-  pnpm component:new <name> [--dry-run]
+  pnpm component <name> [--dry-run]
 
 Examples:
-  pnpm component:new input
-  pnpm component:new Input
-  pnpm component:new BzInput
-  pnpm component:new date-picker --dry-run`)
+  pnpm component input
+  pnpm component Input
+  pnpm component BzInput
+  pnpm component date-picker --dry-run`)
 }
 
 function parseArgs(argv) {
@@ -109,7 +112,7 @@ withDefaults(defineProps<${meta.pascalName}Props>(), {
 
 function buildIndexTemplate(meta) {
   return `import ${meta.pascalName} from './src/${meta.kebabName}.vue'
-import { withInstall } from '../../utils/with-install'
+import { withInstall } from '../../internal/with-install'
 
 export const ${meta.componentName} = withInstall(${meta.pascalName}, '${meta.componentName}')
 
@@ -137,11 +140,17 @@ function addExportIfMissing(source, kebabName) {
 }
 
 function updateDefaults(source, componentName) {
-  const importMatch = source.match(/import\s+\{([^}]+)\}\s+from\s+'\.\.\/components'/)
-  const componentsMatch = source.match(/export const defaultComponents = \[([^\]]*)\]/)
+  const importMatch = source.match(
+    /import\s+\{([^}]+)\}\s+from\s+'\.\.\/components'/
+  )
+  const componentsMatch = source.match(
+    /export const defaultComponents = \[([^\]]*)\]/
+  )
 
   if (!importMatch || !componentsMatch) {
-    throw new Error('Failed to update packages/bzsh-ui/defaults.ts automatically.')
+    throw new Error(
+      'Failed to update packages/bzsh-ui/defaults.ts automatically.'
+    )
   }
 
   const importNames = importMatch[1]
@@ -186,19 +195,28 @@ function addStyleUseIfMissing(source, kebabName) {
 async function main() {
   const { rawName, dryRun } = parseArgs(process.argv.slice(2))
   const meta = resolveComponentMeta(rawName)
-  const componentRoot = path.join(repoRoot, 'packages/components', meta.kebabName)
+  const componentRoot = path.join(
+    repoRoot,
+    'packages/components',
+    meta.kebabName
+  )
   const srcDir = path.join(componentRoot, 'src')
   const styleDir = path.join(componentRoot, 'style')
 
   if (await pathExists(componentRoot)) {
-    throw new Error(`Component already exists: packages/components/${meta.kebabName}`)
+    throw new Error(
+      `Component already exists: packages/components/${meta.kebabName}`
+    )
   }
 
   const componentIndexSource = await readFile(componentsIndexPath, 'utf8')
   const defaultsSource = await readFile(defaultsPath, 'utf8')
   const themeIndexSource = await readFile(themeIndexPath, 'utf8')
 
-  const nextComponentIndex = addExportIfMissing(componentIndexSource, meta.kebabName)
+  const nextComponentIndex = addExportIfMissing(
+    componentIndexSource,
+    meta.kebabName
+  )
   const nextDefaults = updateDefaults(defaultsSource, meta.componentName)
   const nextThemeIndex = addStyleUseIfMissing(themeIndexSource, meta.kebabName)
 
@@ -248,7 +266,9 @@ async function main() {
 
   console.log(`Created component scaffold: ${meta.componentName}`)
   console.log(`- packages/components/${meta.kebabName}/props.ts`)
-  console.log(`- packages/components/${meta.kebabName}/src/${meta.kebabName}.vue`)
+  console.log(
+    `- packages/components/${meta.kebabName}/src/${meta.kebabName}.vue`
+  )
   console.log(`- packages/components/${meta.kebabName}/index.ts`)
   console.log(`- packages/components/${meta.kebabName}/style/index.scss`)
   console.log(`Updated: packages/components/index.ts`)
