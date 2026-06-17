@@ -1,3 +1,159 @@
 {
-  "cSpell.words": ["bzsh"]
+  "prettier.enable": true,
+  "eslint.enable": true,
+  "oxc.enable": true,
+  "stylelint.enable": true,
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "vue",
+    "html",
+    "markdown",
+    "json",
+    "jsonc",
+    "yaml"
+  ],
+  "stylelint.validate": ["css", "less", "postcss", "scss", "vue", "sass"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.oxc": "explicit",
+    "source.fixAll.stylelint": "always",
+    "source.organizeImports": "never"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "prettier.endOfLine": "lf",
+  "[css]": {
+    "editor.defaultFormatter": "stylelint.vscode-stylelint"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "stylelint.vscode-stylelint"
+  },
+  "[sass]": {
+    "editor.defaultFormatter": "stylelint.vscode-stylelint"
+  },
+  "[less]": {
+    "editor.defaultFormatter": "stylelint.vscode-stylelint"
+  },
+  "references.preferredLocation": "peek",
+  "prettier.requireConfig": true,
+  "eslint.codeActionsOnSave.rules": null,
+  "eslint.useFlatConfig": true,
+  // Silent the stylistic rules in you IDE, but still auto fix them
+  "eslint.rules.customizations": [
+    {
+      "rule": "style/*",
+      "severity": "off"
+    },
+    {
+      "rule": "*-indent",
+      "severity": "off"
+    },
+    {
+      "rule": "*-spacing",
+      "severity": "off"
+    },
+    {
+      "rule": "*-spaces",
+      "severity": "off"
+    },
+    {
+      "rule": "*-order",
+      "severity": "off"
+    },
+    {
+      "rule": "*-dangle",
+      "severity": "off"
+    },
+    {
+      "rule": "*-newline",
+      "severity": "off"
+    },
+    {
+      "rule": "*quotes",
+      "severity": "off"
+    },
+    {
+      "rule": "*semi",
+      "severity": "off"
+    }
+  ],
+  "search.followSymlinks": false,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/pnpm-lock.yaml": true,
+    "**/CHANGELOG.md": true,
+    "**/.git": true
+  },
+  // File collapse
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "$(capture).test.ts, $(capture).test.tsx, $(capture).spec.ts, $(capture).spec.tsx, $(capture).d.ts",
+    "*.tsx": "$(capture).test.ts, $(capture).test.tsx, $(capture).spec.ts, $(capture).spec.tsx, $(capture).d.ts",
+    "*.js": "$(capture).js.map, $(capture).spec.js, $(capture).test.js",
+    "*.vue": "$(capture).js, $(capture).ts, $(capture).css, $(capture).scss, $(capture).less, $(capture).styl, $(capture).spec.js, $(capture).spec.ts, $(capture).test.js, $(capture).test.ts, $(capture).story.vue, $(capture).story.js, $(capture).story.ts",
+    "package.json": "pnpm-lock.yaml, pnpm-workspace.yaml, .npmrc, .browserslistrc, .node-version, .nvmrc, .gitattributes, .gitignore, .gitpod.yml, .editorconfig, tsconfig.*, jsconfig.*, cspell.json",
+    "README.md": "*.md",
+    ".env": ".env.*, .envrc, env.d.ts",
+    "vite.config.*": "vitest.config.*, playwright.config.*, uno.config.*, index.html",
+    "eslint.config.*": ".prettierignore, .prettierrc.json, .stylelintignore, .oxlintrc.json, .oxfmtrc.json, stylelint.config.*, commitlint.config.*, lint-staged.config.*, .czrc",
+    "docker-compose.product.yml": ".dockerignore,nginx.conf",
+    "Dockerfile": "docker-compose.prod.yml, .dockerignore"
+  },
+  "vue.editor.focusMode": false,
+  "vue.editor.reactivityVisualization": true,
+  "vue.editor.templateInterpolationDecorators": true,
+  "i18n-ally.localesPaths": ["src/i18n", "src/i18n/lang", "src/plugins/language"],
+  "cSpell.userWords": [
+    "vue3",
+    "unocss",
+    "unplugin",
+    "oxlint",
+    "ependencies",
+    "solt",
+    "stroustrup",
+    "nonwords",
+    "ylwiconfont",
+    "VITE",
+    "BUILDENV",
+    "styl",
+    "intlify",
+    "esno",
+    "Français",
+    "Deutsch",
+    "Español",
+    "Русский",
+    "apifix",
+    "Apifox",
+    "APIV",
+    "endfor",
+    "vueuse",
+    "iconfont",
+    "qiankun",
+    "bzsh",
+    "thirdparty"
+  ],
+  "cSpell.words": [
+    "aliyun",
+    "amap",
+    "breakline",
+    "cssvar",
+    "echarts",
+    "Forex",
+    "gitee",
+    "mapboxgl",
+    "openi",
+    "overscan",
+    "Raddar",
+    "Timteout",
+    "vistors"
+  ]
 }

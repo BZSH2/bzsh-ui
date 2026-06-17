@@ -31,6 +31,7 @@
   },
   "scripts": {
     "prepare": "husky",
+    "cz": "git add . && cz",
     "dev": "pnpm --filter @bzsh-ui/play dev",
     "dev:docs": "pnpm --filter @bzsh-ui/docs docs:dev",
     "build": "pnpm run build:lib && pnpm run build:docs",
@@ -39,7 +40,10 @@
     "test": "vitest run",
     "lint": "pnpm run lint:eslint && pnpm run lint:stylelint",
     "lint:eslint": "eslint .",
+    "lint:eslint:fix": "eslint . --fix",
     "lint:stylelint": "stylelint \"**/*.{vue,scss,css}\" --allow-empty-input",
+    "lint:stylelint:fix": "stylelint \"**/*.{vue,scss,css}\" --fix --allow-empty-input",
+    "lint:fix": "pnpm run lint:eslint:fix && pnpm run lint:stylelint:fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "vue-tsc -p tsconfig.json --noEmit",
@@ -50,19 +54,6 @@
     "utils": "node ./scripts/create-utils.mjs",
     "version-packages": "changeset version",
     "release": "changeset publish"
-  },
-  "lint-staged": {
-    "*.{js,cjs,mjs,ts,mts,cts,vue}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{css,scss,vue}": [
-      "stylelint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,yml,yaml}": [
-      "prettier --write"
-    ]
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
@@ -75,6 +66,8 @@
     "@vitejs/plugin-vue": "^6.0.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@vue/test-utils": "^2.4.6",
+    "commitizen": "^4.3.2",
+    "cz-git": "^1.13.1",
     "element-plus": "^2.14.2",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
