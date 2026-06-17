@@ -122,6 +122,10 @@ importers:
         specifier: ^3.0.1
         version: 3.3.5(typescript@5.9.3)
 
+  apps/docs: {}
+
+  apps/play: {}
+
   docs: {}
 
   play: {}

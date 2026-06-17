@@ -1,5 +1,11 @@
 # bzsh-ui
 
+## 0.1.6
+
+### Patch Changes
+
+- feat: :sparkles: 工程化优化
+
 ## 0.1.5
 
 ### Patch Changes
