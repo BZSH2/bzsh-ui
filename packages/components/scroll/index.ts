@@ -1,5 +1,6 @@
+import { withInstall } from '@bzsh-ui/internal'
+
 import Scroll from './src/scroll.vue'
-import { withInstall } from '../../internal/with-install'
 
 export const BzScroll = withInstall(Scroll, 'BzScroll')
 

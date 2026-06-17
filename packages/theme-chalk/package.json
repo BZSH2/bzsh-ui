@@ -1,0 +1,11 @@
+{
+  "name": "@bzsh-ui/theme-chalk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./src/index.scss": "./src/index.scss",
+    "./src/base.scss": "./src/base.scss",
+    "./src/mixins.scss": "./src/mixins.scss"
+  }
+}

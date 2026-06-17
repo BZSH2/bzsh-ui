@@ -25,5 +25,6 @@ export const packageAliases = {
   '@': packagesDir,
   '@bzsh-ui/components': path.join(componentsDir, 'index.ts'),
   '@bzsh-ui/core': path.join(uiPackageDir, 'index.ts'),
+  '@bzsh-ui/internal': path.join(packagesDir, 'internal', 'index.ts'),
   '@bzsh-ui/utils': path.join(packagesDir, 'utils', 'index.ts'),
 }

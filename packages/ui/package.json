@@ -28,6 +28,11 @@
     "element-plus": "^2.14.2",
     "vue": "^3.5.17"
   },
+  "dependencies": {
+    "@bzsh-ui/components": "workspace:*",
+    "@bzsh-ui/theme-chalk": "workspace:*",
+    "@bzsh-ui/utils": "workspace:*"
+  },
   "scripts": {
     "build": "vite build --config ./vite.config.ts"
   }

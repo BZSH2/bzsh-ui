@@ -1,0 +1,15 @@
+{
+  "name": "@bzsh-ui/components",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.17"
+  },
+  "dependencies": {
+    "@bzsh-ui/internal": "workspace:*"
+  }
+}

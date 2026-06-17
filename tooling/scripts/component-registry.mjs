@@ -65,9 +65,9 @@ function buildDefaultComponents(componentNames) {
   const imports = componentNames
     .map((componentName) => {
       const exportName = toExportName(componentName)
-      return `import { ${exportName} } from '../components/${componentName}'`
+      return exportName
     })
-    .join('\n')
+    .join(', ')
 
   const componentList = componentNames
     .map((componentName) => toExportName(componentName))
@@ -75,7 +75,7 @@ function buildDefaultComponents(componentNames) {
   const arrayValue = componentList ? `[${componentList}]` : '[]'
 
   return `${generatedBanner}
-${imports ? `${imports}\n\n` : ''}import type { Plugin } from 'vue'
+${imports ? `import { ${imports} } from '@bzsh-ui/components'\n\n` : ''}import type { Plugin } from 'vue'
 
 export const defaultComponents: Plugin[] = ${arrayValue}
 `

@@ -16,6 +16,7 @@
       "@bzsh-ui/components": ["packages/components/index.ts"],
       "@bzsh-ui/components/*": ["packages/components/*"],
       "@bzsh-ui/core": ["packages/ui/index.ts"],
+      "@bzsh-ui/internal": ["packages/internal/index.ts"],
       "@bzsh-ui/utils": ["packages/utils/index.ts"]
     }
   }
