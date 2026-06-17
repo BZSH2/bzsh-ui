@@ -1,12 +1,24 @@
 import { mkdir, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
-import { componentsDir, repoRoot } from '../tooling/config/project-paths.mjs'
-import { syncComponentRegistry } from '../tooling/scripts/component-registry.mjs'
+import { componentsDir, repoRoot } from '../tooling/config/project-paths'
+import { syncComponentRegistry } from '../tooling/scripts/component-registry'
 
 const testsDir = path.join(repoRoot, 'tests')
 
-function printUsage() {
+type ComponentMeta = {
+  componentName: string
+  pascalName: string
+  kebabName: string
+  cssName: string
+}
+
+type OutputFile = {
+  path: string
+  content: string
+}
+
+function printUsage(): void {
   console.log(`Usage:
   pnpm component <name> [--dry-run]
 
@@ -17,7 +29,7 @@ Examples:
   pnpm component date-picker --dry-run`)
 }
 
-function parseArgs(argv) {
+function parseArgs(argv: string[]): { dryRun: boolean; rawName: string } {
   if (argv.length === 0 || argv.includes('--help') || argv.includes('-h')) {
     printUsage()
     process.exit(argv.length === 0 ? 1 : 0)
@@ -32,11 +44,11 @@ function parseArgs(argv) {
 
   return {
     dryRun,
-    rawName: nameArg.trim()
+    rawName: nameArg.trim(),
   }
 }
 
-function splitWords(input) {
+function splitWords(input: string): string[] {
   return input
     .replace(/^Bz(?=[A-Z])/, '')
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
@@ -46,11 +58,11 @@ function splitWords(input) {
     .filter(Boolean)
 }
 
-function capitalize(word) {
+function capitalize(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1)
 }
 
-function resolveComponentMeta(rawName) {
+function resolveComponentMeta(rawName: string): ComponentMeta {
   const words = splitWords(rawName)
 
   if (words.length === 0) {
@@ -66,11 +78,11 @@ function resolveComponentMeta(rawName) {
     componentName,
     pascalName,
     kebabName,
-    cssName
+    cssName,
   }
 }
 
-async function pathExists(targetPath) {
+async function pathExists(targetPath: string): Promise<boolean> {
   try {
     await stat(targetPath)
     return true
@@ -79,14 +91,14 @@ async function pathExists(targetPath) {
   }
 }
 
-function buildPropsTemplate(pascalName) {
+function buildPropsTemplate(pascalName: string): string {
   return `export interface ${pascalName}Props {
   label?: string
 }
 `
 }
 
-function buildVueTemplate(meta) {
+function buildVueTemplate(meta: ComponentMeta): string {
   return `<template>
   <div class="${meta.cssName}">
     <slot>{{ label }}</slot>
@@ -103,7 +115,7 @@ withDefaults(defineProps<${meta.pascalName}Props>(), {
 `
 }
 
-function buildIndexTemplate(meta) {
+function buildIndexTemplate(meta: ComponentMeta): string {
   return `import ${meta.pascalName} from './src/${meta.kebabName}.vue'
 import { withInstall } from '../../internal/with-install'
 
@@ -114,7 +126,7 @@ export * from './props'
 `
 }
 
-function buildStyleTemplate(meta) {
+function buildStyleTemplate(meta: ComponentMeta): string {
   return `.${meta.cssName} {
   display: inline-flex;
   align-items: center;
@@ -122,7 +134,7 @@ function buildStyleTemplate(meta) {
 `
 }
 
-function buildTestTemplate(meta) {
+function buildTestTemplate(meta: ComponentMeta): string {
   return `import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -152,7 +164,7 @@ describe('${meta.componentName}', () => {
 `
 }
 
-async function main() {
+async function main(): Promise<void> {
   const { rawName, dryRun } = parseArgs(process.argv.slice(2))
   const meta = resolveComponentMeta(rawName)
   const componentRoot = path.join(componentsDir, meta.kebabName)
@@ -166,27 +178,27 @@ async function main() {
     )
   }
 
-  const outputs = [
+  const outputs: OutputFile[] = [
     {
       path: path.join(componentRoot, 'props.ts'),
-      content: buildPropsTemplate(meta.pascalName)
+      content: buildPropsTemplate(meta.pascalName),
     },
     {
       path: path.join(srcDir, `${meta.kebabName}.vue`),
-      content: buildVueTemplate(meta)
+      content: buildVueTemplate(meta),
     },
     {
       path: path.join(componentRoot, 'index.ts'),
-      content: buildIndexTemplate(meta)
+      content: buildIndexTemplate(meta),
     },
     {
       path: path.join(styleDir, 'index.scss'),
-      content: buildStyleTemplate(meta)
+      content: buildStyleTemplate(meta),
     },
     {
       path: testFilePath,
-      content: buildTestTemplate(meta)
-    }
+      content: buildTestTemplate(meta),
+    },
   ]
 
   if (dryRun) {

@@ -21,7 +21,7 @@ export const defaultComponentsPath = path.join(uiPackageDir, 'defaults.ts')
 export const themeIndexPath = path.join(themeChalkSrcDir, 'index.scss')
 export const themeBasePath = path.join(themeChalkSrcDir, 'base.scss')
 
-export const packageAliases = {
+export const packageAliases: Record<string, string> = {
   '@': packagesDir,
   '@bzsh-ui/components': path.join(componentsDir, 'index.ts'),
   '@bzsh-ui/core': path.join(uiPackageDir, 'index.ts'),

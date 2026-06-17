@@ -1,16 +1,18 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const VALID_BUMP_TYPES = new Set(['patch', 'minor', 'major'])
+type BumpType = 'patch' | 'minor' | 'major'
+
+const VALID_BUMP_TYPES = new Set<BumpType>(['patch', 'minor', 'major'])
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const repoRoot = path.resolve(__dirname, '..')
 const changesetDir = path.join(repoRoot, '.changeset')
 
-function printUsage() {
+function printUsage(): void {
   console.log(`Usage:
   pnpm changeset:auto <patch|minor|major> "<summary>" [--package <name>] [--dry-run]
 
@@ -21,7 +23,12 @@ Examples:
   pnpm changeset:auto patch "修复发布流程" --dry-run`)
 }
 
-function parseArgs(argv) {
+function parseArgs(argv: string[]): {
+  bumpType: BumpType
+  summary: string
+  packageName?: string
+  dryRun: boolean
+} {
   if (argv.length === 0 || argv.includes('--help') || argv.includes('-h')) {
     printUsage()
     process.exit(argv.length === 0 ? 1 : 0)
@@ -29,14 +36,14 @@ function parseArgs(argv) {
 
   const [bumpType, ...rest] = argv
 
-  if (!VALID_BUMP_TYPES.has(bumpType)) {
+  if (!bumpType || !VALID_BUMP_TYPES.has(bumpType as BumpType)) {
     throw new Error(
       `Invalid bump type "${bumpType}". Use patch, minor, or major.`
     )
   }
 
-  const messageParts = []
-  let packageName
+  const messageParts: string[] = []
+  let packageName: string | undefined
   let dryRun = false
 
   for (let index = 0; index < rest.length; index += 1) {
@@ -72,16 +79,18 @@ function parseArgs(argv) {
   }
 
   return {
-    bumpType,
+    bumpType: bumpType as BumpType,
     summary,
     packageName: packageName?.trim(),
-    dryRun
+    dryRun,
   }
 }
 
-async function getDefaultPackageName() {
+async function getDefaultPackageName(): Promise<string> {
   const packageJsonPath = path.join(repoRoot, 'package.json')
-  const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'))
+  const packageJson = JSON.parse(
+    await readFile(packageJsonPath, 'utf8')
+  ) as { name?: string }
 
   if (!packageJson.name) {
     throw new Error('Cannot find package name in package.json.')
@@ -90,7 +99,11 @@ async function getDefaultPackageName() {
   return packageJson.name
 }
 
-function buildChangesetContent(packageName, bumpType, summary) {
+function buildChangesetContent(
+  packageName: string,
+  bumpType: BumpType,
+  summary: string
+): string {
   return `---
 "${packageName}": ${bumpType}
 ---
@@ -99,7 +112,7 @@ ${summary}
 `
 }
 
-function buildFileName(summary) {
+function buildFileName(summary: string): string {
   const normalized = summary
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
@@ -109,7 +122,7 @@ function buildFileName(summary) {
   return `${prefix || 'release'}-${randomUUID().slice(0, 8)}.md`
 }
 
-async function main() {
+async function main(): Promise<void> {
   const { bumpType, summary, packageName, dryRun } = parseArgs(
     process.argv.slice(2)
   )

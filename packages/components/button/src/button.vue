@@ -28,7 +28,7 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   plain: false,
   round: false,
   circle: false,
-  label: ''
+  label: '',
 })
 
 const emit = defineEmits<{
@@ -36,9 +36,7 @@ const emit = defineEmits<{
 }>()
 
 const buttonType = computed(() => props.type)
-const buttonSize = computed(() =>
-  props.size === 'medium' ? 'default' : props.size
-)
+const buttonSize = computed(() => (props.size === 'medium' ? 'default' : props.size))
 
 const handleClick = (event: MouseEvent) => {
   if (props.disabled) {

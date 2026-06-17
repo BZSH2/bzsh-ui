@@ -1,10 +1,19 @@
 import { rm, stat } from 'node:fs/promises'
 import path from 'node:path'
 
-import { componentsDir, docsDir, repoRoot } from '../tooling/config/project-paths.mjs'
-import { syncComponentRegistry } from '../tooling/scripts/component-registry.mjs'
+import {
+  componentsDir,
+  docsDir,
+  repoRoot,
+} from '../tooling/config/project-paths.ts'
+import { syncComponentRegistry } from '../tooling/scripts/component-registry'
 
-function printUsage() {
+type DeleteComponentMeta = {
+  componentName: string
+  kebabName: string
+}
+
+function printUsage(): void {
   console.log(`Usage:
   pnpm deleteC <name> [--dry-run]
 
@@ -15,7 +24,7 @@ Examples:
   pnpm deleteC date-picker --dry-run`)
 }
 
-function parseArgs(argv) {
+function parseArgs(argv: string[]): { dryRun: boolean; rawName: string } {
   if (argv.length === 0 || argv.includes('--help') || argv.includes('-h')) {
     printUsage()
     process.exit(argv.length === 0 ? 1 : 0)
@@ -30,11 +39,11 @@ function parseArgs(argv) {
 
   return {
     dryRun,
-    rawName: nameArg.trim()
+    rawName: nameArg.trim(),
   }
 }
 
-function splitWords(input) {
+function splitWords(input: string): string[] {
   return input
     .replace(/^Bz(?=[A-Z])/, '')
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
@@ -44,11 +53,11 @@ function splitWords(input) {
     .filter(Boolean)
 }
 
-function capitalize(word) {
+function capitalize(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1)
 }
 
-function resolveComponentMeta(rawName) {
+function resolveComponentMeta(rawName: string): DeleteComponentMeta {
   const words = splitWords(rawName)
 
   if (words.length === 0) {
@@ -61,11 +70,11 @@ function resolveComponentMeta(rawName) {
 
   return {
     componentName,
-    kebabName
+    kebabName,
   }
 }
 
-async function pathExists(targetPath) {
+async function pathExists(targetPath: string): Promise<boolean> {
   try {
     await stat(targetPath)
     return true
@@ -74,7 +83,7 @@ async function pathExists(targetPath) {
   }
 }
 
-async function main() {
+async function main(): Promise<void> {
   const { rawName, dryRun } = parseArgs(process.argv.slice(2))
   const meta = resolveComponentMeta(rawName)
   const componentRoot = path.join(componentsDir, meta.kebabName)
@@ -91,7 +100,7 @@ async function main() {
     )
   }
 
-  const deleteTargets = [componentRoot]
+  const deleteTargets: string[] = [componentRoot]
 
   if (await pathExists(docsFilePath)) {
     deleteTargets.push(docsFilePath)

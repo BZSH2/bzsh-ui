@@ -32,17 +32,8 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm lint
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Test
-        run: pnpm test
-
-      - name: Build
-        run: pnpm build
+      - name: Verify Release
+        run: pnpm release:verify
 
       - name: Auto Create Changeset
         env:

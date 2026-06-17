@@ -7,5 +7,8 @@
     "./src/index.scss": "./src/index.scss",
     "./src/base.scss": "./src/base.scss",
     "./src/mixins.scss": "./src/mixins.scss"
+  },
+  "scripts": {
+    "lint": "stylelint \"src/**/*.scss\" --allow-empty-input"
   }
 }

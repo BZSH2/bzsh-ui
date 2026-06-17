@@ -1,4 +1,4 @@
-import { syncComponentRegistry } from './component-registry.mjs'
+import { syncComponentRegistry } from './component-registry.ts'
 
 const dryRun = process.argv.includes('--dry-run')
 

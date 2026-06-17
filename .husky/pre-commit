@@ -13,8 +13,8 @@ fi
 echo "📁 检查文件:"
 echo "$STAGED_FILES" | sed 's/^/  /'
 
-# 提交时只校验暂存区文件，兼顾速度和规则完整性。
-# 开发态快速校验走 oxlint，完整的 ESLint + typecheck 放到 CI / 发布前执行。
+# 提交时只校验暂存区文件，保证速度。
+# 全量 ESLint / Stylelint / typecheck 由 workspace 根脚本统一承担。
 echo "🔍 运行提交前代码检查和格式化..."
 pnpm exec lint-staged
 

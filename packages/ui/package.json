@@ -34,6 +34,8 @@
     "@bzsh-ui/utils": "workspace:*"
   },
   "scripts": {
-    "build": "vite build --config ./vite.config.ts"
+    "build": "vite build --config ./vite.config.ts",
+    "lint": "eslint index.ts defaults.ts make-installer.ts",
+    "typecheck": "vue-tsc -p ../../tsconfig.json --noEmit"
   }
 }

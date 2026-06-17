@@ -9,7 +9,12 @@ const repoRoot = path.resolve(__dirname, '..')
 const utilsDir = path.join(repoRoot, 'packages/utils')
 const utilsIndexPath = path.join(utilsDir, 'index.ts')
 
-function printUsage() {
+type UtilMeta = {
+  fileName: string
+  functionName: string
+}
+
+function printUsage(): void {
   console.log(`Usage:
   pnpm utils <name> [--dry-run]
 
@@ -19,7 +24,7 @@ Examples:
   pnpm utils addUnit --dry-run`)
 }
 
-function parseArgs(argv) {
+function parseArgs(argv: string[]): { dryRun: boolean; rawName: string } {
   if (argv.length === 0 || argv.includes('--help') || argv.includes('-h')) {
     printUsage()
     process.exit(argv.length === 0 ? 1 : 0)
@@ -34,11 +39,11 @@ function parseArgs(argv) {
 
   return {
     dryRun,
-    rawName: nameArg.trim()
+    rawName: nameArg.trim(),
   }
 }
 
-function splitWords(input) {
+function splitWords(input: string): string[] {
   return input
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
     .replace(/[^a-zA-Z0-9]+/g, '-')
@@ -47,11 +52,11 @@ function splitWords(input) {
     .filter(Boolean)
 }
 
-function capitalize(word) {
+function capitalize(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1)
 }
 
-function resolveUtilMeta(rawName) {
+function resolveUtilMeta(rawName: string): UtilMeta {
   const words = splitWords(rawName)
 
   if (words.length === 0) {
@@ -65,11 +70,11 @@ function resolveUtilMeta(rawName) {
 
   return {
     fileName,
-    functionName
+    functionName,
   }
 }
 
-async function pathExists(targetPath) {
+async function pathExists(targetPath: string): Promise<boolean> {
   try {
     await stat(targetPath)
     return true
@@ -78,7 +83,7 @@ async function pathExists(targetPath) {
   }
 }
 
-function buildUtilTemplate(functionName) {
+function buildUtilTemplate(functionName: string): string {
   return `export function ${functionName}(...args: unknown[]): never {
   void args
   throw new Error('Method "${functionName}" is not implemented.')
@@ -86,7 +91,7 @@ function buildUtilTemplate(functionName) {
 `
 }
 
-function addExportIfMissing(source, fileName) {
+function addExportIfMissing(source: string, fileName: string): string {
   const exportLine = `export * from './${fileName}'`
 
   if (source.includes(exportLine)) {
@@ -96,7 +101,7 @@ function addExportIfMissing(source, fileName) {
   return source.trimEnd() + `\n${exportLine}\n`
 }
 
-async function main() {
+async function main(): Promise<void> {
   const { rawName, dryRun } = parseArgs(process.argv.slice(2))
   const meta = resolveUtilMeta(rawName)
   const utilFilePath = path.join(utilsDir, `${meta.fileName}.ts`)

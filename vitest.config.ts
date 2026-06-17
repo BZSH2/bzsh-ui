@@ -1,7 +1,7 @@
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vitest/config'
 
-import { packageAliases } from './tooling/config/project-paths.mjs'
+import { packageAliases } from './tooling/config/project-paths.ts'
 
 export default defineConfig({
   plugins: [vue()],

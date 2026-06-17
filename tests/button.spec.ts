@@ -7,8 +7,8 @@ describe('BzButton', () => {
   it('renders label text', () => {
     const wrapper = mount(BzButton, {
       props: {
-        label: 'Hello'
-      }
+        label: 'Hello',
+      },
     })
 
     expect(wrapper.text()).toContain('Hello')
@@ -25,8 +25,8 @@ describe('BzButton', () => {
   it('does not emit click when disabled', async () => {
     const wrapper = mount(BzButton, {
       props: {
-        disabled: true
-      }
+        disabled: true,
+      },
     })
 
     await wrapper.trigger('click')
@@ -36,7 +36,7 @@ describe('BzButton', () => {
 
   it('installs component on app', () => {
     const app = {
-      component: vi.fn()
+      component: vi.fn(),
     }
 
     BzButton.install?.(app as never)

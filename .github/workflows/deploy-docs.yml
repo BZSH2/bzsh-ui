@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - 'docs/**'
+      - 'apps/docs/**'
       - 'packages/**'
   workflow_dispatch:
 
@@ -35,7 +35,7 @@ jobs:
 
       - name: Create Archive
         run: |
-          cd docs/.vitepress/dist
+          cd apps/docs/.vitepress/dist
           tar -czf /tmp/bzsh-ui-docs.tar.gz .
 
       - name: Deploy Docs to Server
