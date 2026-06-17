@@ -7,13 +7,13 @@
   "include": [
     "packages/**/*.ts",
     "packages/**/*.d.ts",
+    "packages/**/*.mts",
     "packages/**/*.vue",
     "apps/play/**/*.ts",
     "apps/play/**/*.vue",
     "tooling/**/*.d.ts",
     "tooling/**/*.d.mts",
     "tests/**/*.ts",
-    "vite.config.ts",
     "vitest.config.ts",
     "eslint.config.mjs",
     "apps/docs/.vitepress/config.ts"

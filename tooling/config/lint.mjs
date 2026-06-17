@@ -1,7 +1,7 @@
 export const workspaceIgnores = [
-  'dist/**',
-  'coverage/**',
-  'node_modules/**',
+  '**/dist/**',
+  '**/coverage/**',
+  '**/node_modules/**',
   'apps/docs/.vitepress/cache/**',
   'apps/docs/.vitepress/dist/**',
 ]

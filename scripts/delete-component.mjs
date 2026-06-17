@@ -122,7 +122,7 @@ async function main() {
     console.log(`- ${path.relative(repoRoot, target)}`)
   })
   console.log('Updated: packages/components/index.ts')
-  console.log('Updated: packages/bzsh-ui/defaults.ts')
+  console.log('Updated: packages/ui/defaults.ts')
   console.log('Updated: packages/theme-chalk/src/index.scss')
 }
 

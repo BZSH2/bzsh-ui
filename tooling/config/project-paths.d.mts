@@ -5,6 +5,7 @@ export declare const toolingDir: string
 export declare const docsDir: string
 export declare const playDir: string
 export declare const componentsDir: string
+export declare const uiPackageDir: string
 export declare const themeChalkSrcDir: string
 export declare const scriptsDir: string
 export declare const componentEntriesPath: string

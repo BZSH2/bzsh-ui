@@ -5,5 +5,5 @@ export const makeInstaller = (components: Plugin[] = []) => ({
     components.forEach((component) => {
       app.use(component)
     })
-  }
+  },
 })

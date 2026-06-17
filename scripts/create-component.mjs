@@ -220,7 +220,7 @@ async function main() {
   console.log(`- packages/components/${meta.kebabName}/index.ts`)
   console.log(`- packages/components/${meta.kebabName}/style/index.scss`)
   console.log(`Updated: packages/components/index.ts`)
-  console.log(`Updated: packages/bzsh-ui/defaults.ts`)
+  console.log(`Updated: packages/ui/defaults.ts`)
   console.log(`Updated: packages/theme-chalk/src/index.scss`)
 }
 
