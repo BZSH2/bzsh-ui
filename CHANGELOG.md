@@ -1,5 +1,17 @@
 # bzsh-ui
 
+## 0.1.5
+
+### Patch Changes
+
+- fix: add -i ~/.ssh/deploy_key to scp in deploy workflow
+
+## 0.1.4
+
+### Patch Changes
+
+- feat: 优化文件
+
 ## 0.1.3
 
 ### Patch Changes
