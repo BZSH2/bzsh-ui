@@ -47,6 +47,7 @@ async function listComponentNames(): Promise<string[]> {
 
     const indexPath = path.join(componentsDir, entry.name, 'index.ts')
 
+    // A component is considered public only when it exposes its own entry file.
     if (await pathExists(indexPath)) {
       componentNames.push(entry.name)
     }
@@ -99,6 +100,7 @@ export async function syncComponentRegistry({
 }: {
   dryRun?: boolean
 } = {}): Promise<void> {
+  // The directory tree is the source of truth; every aggregate file is derived from it.
   const componentNames = await listComponentNames()
   const nextComponentExports = buildComponentExports(componentNames)
   const nextDefaultComponents = buildDefaultComponents(componentNames)

@@ -100,6 +100,7 @@ async function main(): Promise<void> {
     )
   }
 
+  // Docs and tests are optional companions, so only remove them when present.
   const deleteTargets: string[] = [componentRoot]
 
   if (await pathExists(docsFilePath)) {
@@ -124,6 +125,7 @@ async function main(): Promise<void> {
     deleteTargets.map((target) => rm(target, { recursive: true, force: true }))
   )
 
+  // Keep generated entry files in sync after removing the source directory.
   await syncComponentRegistry()
 
   console.log(`Deleted component: ${meta.componentName}`)

@@ -178,6 +178,7 @@ async function main(): Promise<void> {
     )
   }
 
+  // Create the source files first, then let the registry script regenerate aggregates.
   const outputs: OutputFile[] = [
     {
       path: path.join(componentRoot, 'props.ts'),
@@ -221,6 +222,7 @@ async function main(): Promise<void> {
     outputs.map((output) => writeFile(output.path, output.content, 'utf8'))
   )
 
+  // Regenerate shared exports, installer defaults, and theme imports from the directory tree.
   await syncComponentRegistry()
 
   console.log(`Created component scaffold: ${meta.componentName}`)

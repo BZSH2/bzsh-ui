@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process'
 
-// @ts-ignore lint.mjs remains a JS compatibility entry for tool configs.
+// lint.mjs stays as a JS bridge so ESLint, Stylelint, and lint-staged can share one source.
+// @ts-ignore The runtime import is intentional and covered by the current toolchain setup.
 import { rootLintIgnorePatterns, rootLintTargets } from '../config/lint.mjs'
 
 type LintTool = 'eslint' | 'stylelint'
@@ -33,6 +34,7 @@ if (maybeFixFlag === '--fix') {
   args.push('--fix')
 }
 
+// Root lint should not re-scan package sources that already have dedicated package-level tasks.
 for (const pattern of rootLintIgnorePatterns) {
   args.push('--ignore-pattern', pattern)
 }
