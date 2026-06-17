@@ -1,7 +1,7 @@
 node_modules/
 dist/
 coverage/
-docs/.vitepress/cache/
-docs/.vitepress/dist/
+apps/docs/.vitepress/cache/
+apps/docs/.vitepress/dist/
 *.tsbuildinfo
 *.log

@@ -17,7 +17,7 @@ function getComponentItems() {
 
       return {
         text: heading ?? kebabName,
-        link: `/components/${kebabName}`
+        link: `/components/${kebabName}`,
       }
     })
 }
@@ -32,21 +32,21 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: '指南', link: '/guide/getting-started' },
-      { text: '组件', link: componentEntryLink }
+      { text: '组件', link: componentEntryLink },
     ],
     sidebar: {
       '/guide/': [
         {
           text: '指南',
-          items: [{ text: '快速开始', link: '/guide/getting-started' }]
-        }
+          items: [{ text: '快速开始', link: '/guide/getting-started' }],
+        },
       ],
       '/components/': [
         {
           text: '组件',
-          items: componentItems
-        }
-      ]
-    }
-  }
+          items: componentItems,
+        },
+      ],
+    },
+  },
 })

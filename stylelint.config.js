@@ -1,3 +1,9 @@
+import {
+  stylelintScssFiles,
+  stylelintVueLikeFiles,
+  workspaceIgnores,
+} from './tooling/config/lint.mjs'
+
 /** @type {import('stylelint').Config} */
 export default {
   extends: [
@@ -5,14 +11,14 @@ export default {
     'stylelint-config-standard-scss',
     'stylelint-config-recess-order',
   ],
-  ignoreFiles: ['dist/**', 'coverage/**', 'node_modules/**'],
+  ignoreFiles: workspaceIgnores,
   overrides: [
     {
-      files: ['.vue', '.htm', '.html'].flatMap((ext) => [`*${ext}`, `**/*${ext}`]),
+      files: stylelintVueLikeFiles.flatMap((ext) => [`*${ext}`, `**/*${ext}`]),
       customSyntax: 'postcss-html',
     },
     {
-      files: ['**/*.scss'],
+      files: stylelintScssFiles,
       customSyntax: 'postcss-scss',
       rules: {
         'at-rule-no-unknown': null,

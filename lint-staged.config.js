@@ -1,5 +1,3 @@
-export default {
-  '*.{js,cjs,mjs,ts,mts,cts,vue}': ['eslint --fix', 'prettier --write'],
-  '*.{css,scss,vue}': ['stylelint --fix', 'prettier --write'],
-  '*.{json,md,yml,yaml}': ['prettier --write'],
-}
+import { lintStagedPatterns } from './tooling/config/lint.mjs'
+
+export default lintStagedPatterns

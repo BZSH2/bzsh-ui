@@ -8,12 +8,14 @@
     "packages/**/*.ts",
     "packages/**/*.d.ts",
     "packages/**/*.vue",
-    "play/**/*.ts",
-    "play/**/*.vue",
+    "apps/play/**/*.ts",
+    "apps/play/**/*.vue",
+    "tooling/**/*.d.ts",
+    "tooling/**/*.d.mts",
     "tests/**/*.ts",
     "vite.config.ts",
     "vitest.config.ts",
     "eslint.config.mjs",
-    "docs/.vitepress/config.ts"
+    "apps/docs/.vitepress/config.ts"
   ]
 }

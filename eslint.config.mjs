@@ -7,139 +7,110 @@ import importPlugin from 'eslint-plugin-import'
 import unusedImports from 'eslint-plugin-unused-imports'
 import vue from 'eslint-plugin-vue'
 import vueParser from 'vue-eslint-parser'
+import {
+  eslintJavaScriptFiles,
+  eslintTypeScriptFiles,
+  eslintVueFiles,
+  workspaceIgnores,
+} from './tooling/config/lint.mjs'
+
+const sharedImportRules = {
+  'import/order': [
+    'error',
+    {
+      'alphabetize': { order: 'asc', caseInsensitive: true },
+      'newlines-between': 'always',
+      'groups': [['builtin', 'external'], ['internal'], ['parent', 'sibling', 'index'], ['type']],
+    },
+  ],
+  '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+  '@typescript-eslint/no-unused-vars': 'off',
+  'unused-imports/no-unused-imports': 'error',
+  'unused-imports/no-unused-vars': [
+    'warn',
+    {
+      vars: 'all',
+      varsIgnorePattern: '^_',
+      args: 'after-used',
+      argsIgnorePattern: '^_',
+    },
+  ],
+}
 
 export default [
   {
-    ignores: [
-      'dist/**',
-      'coverage/**',
-      'node_modules/**',
-      'docs/.vitepress/dist/**'
-    ]
+    ignores: workspaceIgnores,
   },
   {
-    files: ['**/*.{cjs,mjs}'],
+    files: eslintJavaScriptFiles,
     languageOptions: {
       globals: {
-        ...globals.node
-      }
-    }
+        ...globals.node,
+        ...globals.browser,
+      },
+    },
   },
   js.configs.recommended,
   ...vue.configs['flat/recommended'],
   {
-    files: ['**/*.ts'],
+    files: eslintTypeScriptFiles,
     languageOptions: {
       parser: tsParser,
       parserOptions: {
         ecmaVersion: 'latest',
-        sourceType: 'module'
+        sourceType: 'module',
       },
       globals: {
         ...globals.node,
-        ...globals.browser
-      }
+        ...globals.browser,
+      },
     },
     plugins: {
       '@typescript-eslint': tseslint,
-      import: importPlugin,
-      'unused-imports': unusedImports
+      'import': importPlugin,
+      'unused-imports': unusedImports,
     },
     rules: {
       'no-undef': 'off',
-      'import/order': [
-        'error',
-        {
-          alphabetize: { order: 'asc', caseInsensitive: true },
-          'newlines-between': 'always',
-          groups: [
-            ['builtin', 'external'],
-            ['internal'],
-            ['parent', 'sibling', 'index'],
-            ['type']
-          ]
-        }
-      ],
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        { prefer: 'type-imports' }
-      ],
-      '@typescript-eslint/no-unused-vars': 'off',
-      'unused-imports/no-unused-imports': 'error',
-      'unused-imports/no-unused-vars': [
-        'warn',
-        {
-          vars: 'all',
-          varsIgnorePattern: '^_',
-          args: 'after-used',
-          argsIgnorePattern: '^_'
-        }
-      ]
+      ...sharedImportRules,
     },
     settings: {
       'import/resolver': {
-        typescript: true
-      }
-    }
+        typescript: true,
+      },
+    },
   },
   {
-    files: ['**/*.vue'],
+    files: eslintVueFiles,
     languageOptions: {
       parser: vueParser,
       parserOptions: {
         parser: tsParser,
         ecmaVersion: 'latest',
         sourceType: 'module',
-        extraFileExtensions: ['.vue']
+        extraFileExtensions: ['.vue'],
       },
       globals: {
         ...globals.browser,
-        ...globals.node
-      }
+        ...globals.node,
+      },
     },
     plugins: {
       '@typescript-eslint': tseslint,
-      import: importPlugin,
-      'unused-imports': unusedImports
+      'import': importPlugin,
+      'unused-imports': unusedImports,
     },
     rules: {
       'no-undef': 'off',
       'vue/multi-word-component-names': 'off',
       'vue/require-default-prop': 'off',
-      'import/order': [
-        'error',
-        {
-          alphabetize: { order: 'asc', caseInsensitive: true },
-          'newlines-between': 'always',
-          groups: [
-            ['builtin', 'external'],
-            ['internal'],
-            ['parent', 'sibling', 'index'],
-            ['type']
-          ]
-        }
-      ],
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        { prefer: 'type-imports' }
-      ],
-      '@typescript-eslint/no-unused-vars': 'off',
-      'unused-imports/no-unused-imports': 'error',
-      'unused-imports/no-unused-vars': [
-        'warn',
-        {
-          vars: 'all',
-          varsIgnorePattern: '^_',
-          args: 'after-used',
-          argsIgnorePattern: '^_'
-        }
-      ]
+      ...sharedImportRules,
     },
     settings: {
       'import/resolver': {
-        typescript: true
-      }
-    }
+        typescript: true,
+      },
+    },
   },
-  eslintConfigPrettier
+  eslintConfigPrettier,
 ]

@@ -1,17 +1,9 @@
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
+import { mkdir, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const repoRoot = path.resolve(__dirname, '..')
+import { componentsDir, repoRoot } from '../tooling/config/project-paths.mjs'
+import { syncComponentRegistry } from '../tooling/scripts/component-registry.mjs'
 
-const componentsIndexPath = path.join(repoRoot, 'packages/components/index.ts')
-const metadataPath = path.join(repoRoot, 'packages/components/metadata.ts')
-const themeIndexPath = path.join(
-  repoRoot,
-  'packages/theme-chalk/src/index.scss'
-)
 const testsDir = path.join(repoRoot, 'tests')
 
 function printUsage() {
@@ -160,55 +152,10 @@ describe('${meta.componentName}', () => {
 `
 }
 
-function getStyleNamespace(kebabName) {
-  return `${kebabName.replace(/-/g, '_')}_style`
-}
-
-function addExportIfMissing(source, kebabName) {
-  const exportLine = `export * from './${kebabName}'`
-
-  if (source.includes(exportLine)) {
-    return source
-  }
-
-  return source.trimEnd() + `\n${exportLine}\n`
-}
-
-function addMetadataIfMissing(source, meta) {
-  if (source.includes(`kebabName: '${meta.kebabName}'`)) {
-    return source
-  }
-
-  const entry = `  {\n    exportName: '${meta.componentName}',\n    kebabName: '${meta.kebabName}'\n  }`
-
-  return source.replace(
-    /export const componentMetadata: ComponentMeta\[\] = \[([\s\S]*?)\n\]/,
-    (match, content) => {
-      const trimmed = content.trimEnd()
-      const nextContent = trimmed ? `${trimmed},\n${entry}` : `\n${entry}`
-      return `export const componentMetadata: ComponentMeta[] = [${nextContent}\n]`
-    }
-  )
-}
-
-function addStyleUseIfMissing(source, kebabName) {
-  const useLine = `@use '../../components/${kebabName}/style/index' as ${getStyleNamespace(kebabName)};`
-
-  if (source.includes(useLine)) {
-    return source
-  }
-
-  return useLine + '\n' + source
-}
-
 async function main() {
   const { rawName, dryRun } = parseArgs(process.argv.slice(2))
   const meta = resolveComponentMeta(rawName)
-  const componentRoot = path.join(
-    repoRoot,
-    'packages/components',
-    meta.kebabName
-  )
+  const componentRoot = path.join(componentsDir, meta.kebabName)
   const srcDir = path.join(componentRoot, 'src')
   const styleDir = path.join(componentRoot, 'style')
   const testFilePath = path.join(testsDir, `${meta.kebabName}.spec.ts`)
@@ -218,17 +165,6 @@ async function main() {
       `Component already exists: packages/components/${meta.kebabName}`
     )
   }
-
-  const componentIndexSource = await readFile(componentsIndexPath, 'utf8')
-  const metadataSource = await readFile(metadataPath, 'utf8')
-  const themeIndexSource = await readFile(themeIndexPath, 'utf8')
-
-  const nextComponentIndex = addExportIfMissing(
-    componentIndexSource,
-    meta.kebabName
-  )
-  const nextMetadata = addMetadataIfMissing(metadataSource, meta)
-  const nextThemeIndex = addStyleUseIfMissing(themeIndexSource, meta.kebabName)
 
   const outputs = [
     {
@@ -261,9 +197,7 @@ async function main() {
     outputs.forEach((output) => {
       console.log(`Create: ${path.relative(repoRoot, output.path)}`)
     })
-    console.log(`Update: ${path.relative(repoRoot, componentsIndexPath)}`)
-    console.log(`Update: ${path.relative(repoRoot, metadataPath)}`)
-    console.log(`Update: ${path.relative(repoRoot, themeIndexPath)}`)
+    await syncComponentRegistry({ dryRun: true })
     return
   }
 
@@ -275,9 +209,7 @@ async function main() {
     outputs.map((output) => writeFile(output.path, output.content, 'utf8'))
   )
 
-  await writeFile(componentsIndexPath, nextComponentIndex, 'utf8')
-  await writeFile(metadataPath, nextMetadata, 'utf8')
-  await writeFile(themeIndexPath, nextThemeIndex, 'utf8')
+  await syncComponentRegistry()
 
   console.log(`Created component scaffold: ${meta.componentName}`)
   console.log(`- packages/components/${meta.kebabName}/props.ts`)
@@ -288,7 +220,7 @@ async function main() {
   console.log(`- packages/components/${meta.kebabName}/index.ts`)
   console.log(`- packages/components/${meta.kebabName}/style/index.scss`)
   console.log(`Updated: packages/components/index.ts`)
-  console.log(`Updated: packages/components/metadata.ts`)
+  console.log(`Updated: packages/bzsh-ui/defaults.ts`)
   console.log(`Updated: packages/theme-chalk/src/index.scss`)
 }
 

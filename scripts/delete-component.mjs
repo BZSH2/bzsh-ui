@@ -1,17 +1,8 @@
-import { readFile, rm, stat, writeFile } from 'node:fs/promises'
+import { rm, stat } from 'node:fs/promises'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const repoRoot = path.resolve(__dirname, '..')
-
-const componentsIndexPath = path.join(repoRoot, 'packages/components/index.ts')
-const metadataPath = path.join(repoRoot, 'packages/components/metadata.ts')
-const themeIndexPath = path.join(
-  repoRoot,
-  'packages/theme-chalk/src/index.scss'
-)
+import { componentsDir, docsDir, repoRoot } from '../tooling/config/project-paths.mjs'
+import { syncComponentRegistry } from '../tooling/scripts/component-registry.mjs'
 
 function printUsage() {
   console.log(`Usage:
@@ -83,44 +74,13 @@ async function pathExists(targetPath) {
   }
 }
 
-function removeLine(source, line) {
-  return source
-    .split('\n')
-    .filter((item) => item.trim() !== line.trim())
-    .join('\n')
-    .replace(/\n{3,}/g, '\n\n')
-}
-
-function removeStyleUseLine(source, kebabName) {
-  return source
-    .split('\n')
-    .filter(
-      (line) => !line.includes(`../../components/${kebabName}/style/index'`)
-    )
-    .join('\n')
-    .replace(/\n{3,}/g, '\n\n')
-}
-
-function removeMetadataEntry(source, kebabName) {
-  const blockPattern = new RegExp(
-    `\\s*\\{\\n\\s*exportName: 'Bz[^']+',\\n\\s*kebabName: '${kebabName}'\\n\\s*\\},?\\n?`,
-    'g'
-  )
-
-  return source.replace(blockPattern, '\n').replace(/\n{3,}/g, '\n\n')
-}
-
 async function main() {
   const { rawName, dryRun } = parseArgs(process.argv.slice(2))
   const meta = resolveComponentMeta(rawName)
-  const componentRoot = path.join(
-    repoRoot,
-    'packages/components',
-    meta.kebabName
-  )
+  const componentRoot = path.join(componentsDir, meta.kebabName)
   const docsFilePath = path.join(
-    repoRoot,
-    'docs/components',
+    docsDir,
+    'components',
     `${meta.kebabName}.md`
   )
   const testFilePath = path.join(repoRoot, 'tests', `${meta.kebabName}.spec.ts`)
@@ -130,17 +90,6 @@ async function main() {
       `Component not found: packages/components/${meta.kebabName}`
     )
   }
-
-  const componentsIndexSource = await readFile(componentsIndexPath, 'utf8')
-  const metadataSource = await readFile(metadataPath, 'utf8')
-  const themeIndexSource = await readFile(themeIndexPath, 'utf8')
-
-  const nextComponentsIndex = removeLine(
-    componentsIndexSource,
-    `export * from './${meta.kebabName}'`
-  )
-  const nextMetadata = removeMetadataEntry(metadataSource, meta.kebabName)
-  const nextThemeIndex = removeStyleUseLine(themeIndexSource, meta.kebabName)
 
   const deleteTargets = [componentRoot]
 
@@ -158,9 +107,7 @@ async function main() {
     deleteTargets.forEach((target) => {
       console.log(`Delete: ${path.relative(repoRoot, target)}`)
     })
-    console.log(`Update: ${path.relative(repoRoot, componentsIndexPath)}`)
-    console.log(`Update: ${path.relative(repoRoot, metadataPath)}`)
-    console.log(`Update: ${path.relative(repoRoot, themeIndexPath)}`)
+    await syncComponentRegistry({ dryRun: true })
     return
   }
 
@@ -168,16 +115,14 @@ async function main() {
     deleteTargets.map((target) => rm(target, { recursive: true, force: true }))
   )
 
-  await writeFile(componentsIndexPath, nextComponentsIndex, 'utf8')
-  await writeFile(metadataPath, nextMetadata, 'utf8')
-  await writeFile(themeIndexPath, nextThemeIndex, 'utf8')
+  await syncComponentRegistry()
 
   console.log(`Deleted component: ${meta.componentName}`)
   deleteTargets.forEach((target) => {
     console.log(`- ${path.relative(repoRoot, target)}`)
   })
   console.log('Updated: packages/components/index.ts')
-  console.log('Updated: packages/components/metadata.ts')
+  console.log('Updated: packages/bzsh-ui/defaults.ts')
   console.log('Updated: packages/theme-chalk/src/index.scss')
 }
 
