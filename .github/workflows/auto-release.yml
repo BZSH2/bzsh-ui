@@ -13,17 +13,6 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Validate release token
-        env:
-          RELEASE_PAT: ${{ secrets.RELEASE_PAT }}
-        shell: bash
-        run: |
-          if [ -z "$RELEASE_PAT" ]; then
-            echo "Missing required secret: RELEASE_PAT"
-            echo "Create a Personal Access Token with contents:write permission and save it as RELEASE_PAT."
-            exit 1
-          fi
-
       - name: Checkout
         uses: actions/checkout@v5
         with:
@@ -53,7 +42,7 @@ jobs:
         if: steps.version.outputs.version_changed == 'true'
         id: existing
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_PAT }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           tag="v${{ steps.version.outputs.current_version }}"
@@ -66,7 +55,7 @@ jobs:
       - name: Create GitHub Release
         if: steps.version.outputs.version_changed == 'true' && steps.existing.outputs.exists == 'false'
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_PAT }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           tag="v${{ steps.version.outputs.current_version }}"
