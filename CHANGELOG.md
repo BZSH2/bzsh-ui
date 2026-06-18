@@ -1,5 +1,11 @@
 # bzsh-ui
 
+## 0.1.9
+
+### Patch Changes
+
+- Merge branch 'master' of https://github.com/BZSH2/bzsh-ui
+
 ## 0.1.8
 
 ### Patch Changes
