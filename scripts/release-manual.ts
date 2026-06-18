@@ -191,10 +191,9 @@ function runCommand(
     return ''
   }
 
-  const result = spawnSync(bin, args, {
+  const result = spawnSync(resolveExecutable(bin), args, {
     cwd: repoRoot,
     encoding: 'utf8',
-    shell: process.platform === 'win32',
     stdio: options.captureOutput ? 'pipe' : 'inherit',
   })
 
@@ -208,6 +207,28 @@ function runCommand(
   }
 
   return result.stdout?.trim() ?? ''
+}
+
+/**
+ * 解析适合当前平台的可执行文件名
+ * 避免 Windows 下 shell 转义导致参数被错误拆分。
+ * @param bin 可执行文件名称
+ * @returns 可直接传给 spawnSync 的可执行文件
+ */
+function resolveExecutable(bin: string): string {
+  if (process.platform !== 'win32') {
+    return bin
+  }
+
+  if (path.extname(bin)) {
+    return bin
+  }
+
+  if (bin === 'pnpm') {
+    return 'pnpm.cmd'
+  }
+
+  return bin
 }
 
 /**
@@ -357,10 +378,9 @@ function assertRemoteTagNotExists(remote: string, tagName: string): void {
  * @param tagName 目标 tag 名称
  */
 function assertGithubReleaseNotExists(tagName: string): void {
-  const result = spawnSync('gh', ['release', 'view', tagName], {
+  const result = spawnSync(resolveExecutable('gh'), ['release', 'view', tagName], {
     cwd: repoRoot,
     encoding: 'utf8',
-    shell: process.platform === 'win32',
     stdio: 'pipe',
   })
 
