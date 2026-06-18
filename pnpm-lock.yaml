@@ -37,12 +37,6 @@ importers:
       '@vue/test-utils':
         specifier: ^2.4.6
         version: 2.4.11(@vue/compiler-dom@3.5.38)(@vue/server-renderer@3.5.38(vue@3.5.38(typescript@5.9.3)))(vue@3.5.38(typescript@5.9.3))
-      element-plus:
-        specifier: ^2.14.2
-        version: 2.14.2(vue@3.5.38(typescript@5.9.3))
-      eslint:
-        specifier: ^9.29.0
-        version: 9.39.4(jiti@2.6.1)
       eslint-config-prettier:
         specifier: ^10.1.5
         version: 10.1.8(eslint@9.39.4(jiti@2.6.1))
@@ -126,13 +120,14 @@ importers:
 
   apps/play: {}
 
-  docs: {}
-
   packages/components:
     dependencies:
       '@bzsh-ui/internal':
         specifier: workspace:*
         version: link:../internal
+      element-plus:
+        specifier: ^2.14.2
+        version: 2.14.2(vue@3.5.38(typescript@5.9.3))
       vue:
         specifier: ^3.5.17
         version: 3.5.38(typescript@5.9.3)
@@ -164,8 +159,6 @@ importers:
         version: 3.5.38(typescript@5.9.3)
 
   packages/utils: {}
-
-  play: {}
 
 packages:
   '@algolia/abtesting@1.20.0':

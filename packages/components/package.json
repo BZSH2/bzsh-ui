@@ -10,6 +10,7 @@
     "vue": "^3.5.17"
   },
   "dependencies": {
+    "element-plus": "^2.14.2",
     "@bzsh-ui/internal": "workspace:*"
   },
   "scripts": {
