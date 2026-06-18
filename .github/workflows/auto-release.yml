@@ -1,0 +1,65 @@
+name: Create GitHub Release
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - packages/ui/package.json
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Detect version change
+        id: version
+        shell: bash
+        run: |
+          current_version=$(node -e "console.log(JSON.parse(require('fs').readFileSync('packages/ui/package.json', 'utf8')).version)")
+          previous_version=""
+
+          if git cat-file -e "${{ github.event.before }}:packages/ui/package.json" 2>/dev/null; then
+            previous_version=$(git show "${{ github.event.before }}:packages/ui/package.json" | node -e "let data=''; process.stdin.on('data', chunk => data += chunk); process.stdin.on('end', () => console.log(JSON.parse(data).version))")
+          fi
+
+          echo "current_version=$current_version" >> "$GITHUB_OUTPUT"
+          echo "previous_version=$previous_version" >> "$GITHUB_OUTPUT"
+
+          if [ "$current_version" = "$previous_version" ]; then
+            echo "version_changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "version_changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check existing release
+        if: steps.version.outputs.version_changed == 'true'
+        id: existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          tag="v${{ steps.version.outputs.current_version }}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub Release
+        if: steps.version.outputs.version_changed == 'true' && steps.existing.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          tag="v${{ steps.version.outputs.current_version }}"
+          gh release create "$tag" \
+            --target "${GITHUB_SHA}" \
+            --title "$tag" \
+            --generate-notes

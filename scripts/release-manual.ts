@@ -66,14 +66,6 @@ function main() {
     process.exit(1)
   }
 
-  try {
-    run('gh', ['--version'])
-  } catch {
-    console.error('Error: gh (GitHub CLI) is not installed or not in PATH')
-    console.error('Please install it from: https://cli.github.com/')
-    process.exit(1)
-  }
-
   const { versionType, message } = getNextVersionFromArgs()
 
   console.log('→ Checking working directory status...')
@@ -116,35 +108,8 @@ function main() {
   console.log('→ Pushing to origin...')
   run('git', ['push', 'origin', 'master'])
 
-  console.log('→ Creating tag...')
-  run('git', ['tag', newTag])
-  run('git', ['push', 'origin', newTag])
-
-  console.log('→ Creating GitHub Release...')
-  console.log(`→ This will trigger the publish-npm workflow on GitHub`)
-
-  const releaseArgs: string[] = [
-    'release',
-    'create',
-    newTag,
-    '--title',
-    newTag,
-    '--generate-notes'
-  ]
-
-  if (message) {
-    releaseArgs.push('--notes', message)
-  }
-
-  try {
-    run('gh', releaseArgs)
-    console.log(`✅ Release ${newTag} created successfully`)
-    console.log(`The publish-npm workflow should now start automatically on GitHub`)
-  } catch {
-    console.error(`❌ Failed to create GitHub Release`)
-    console.error(`You can create it manually at: https://github.com/BZSH2/bzsh-ui/releases/new?tag=${newTag}`)
-    process.exit(1)
-  }
+  console.log(`✅ Version commit ${newTag} pushed successfully`)
+  console.log('The auto-release workflow will create the tag and GitHub Release on CI.')
 }
 
 main()
