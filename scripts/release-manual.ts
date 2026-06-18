@@ -6,11 +6,19 @@ import { fileURLToPath } from 'node:url'
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const projectRoot = resolve(__dirname, '..')
 
+function resolveExecutable(cmd: string) {
+  if (process.platform === 'win32' && (cmd === 'pnpm' || cmd === 'npx')) {
+    return `${cmd}.cmd`
+  }
+  return cmd
+}
+
 function run(cmd: string, args: string[] = [], options: Record<string, unknown> = {}) {
-  const result = spawnSync(cmd, args, {
+  const executable = resolveExecutable(cmd)
+  const result = spawnSync(executable, args, {
     stdio: 'inherit',
     cwd: projectRoot,
-    shell: process.platform === 'win32' ? 'powershell.exe' : true,
+    shell: process.platform === 'win32' && executable.endsWith('.cmd'),
     ...options
   })
   if (result.status !== 0) {
@@ -20,14 +28,24 @@ function run(cmd: string, args: string[] = [], options: Record<string, unknown> 
 
 function hasPendingChangesets() {
   try {
-    const { status } = spawnSync('npx', ['changeset', 'status'], {
+    const executable = resolveExecutable('npx')
+    const { status } = spawnSync(executable, ['changeset', 'status'], {
       cwd: projectRoot,
-      shell: process.platform === 'win32' ? 'powershell.exe' : true
+      shell: process.platform === 'win32' && executable.endsWith('.cmd')
     })
     return status === 0
   } catch {
     return false
   }
+}
+
+function hasWorkingTreeChanges() {
+  const result = spawnSync('git', ['status', '--porcelain'], {
+    cwd: projectRoot,
+    encoding: 'utf-8'
+  })
+
+  return result.stdout.trim().length > 0
 }
 
 type VersionType = 'patch' | 'minor' | 'major'
@@ -70,11 +88,7 @@ function main() {
 
   console.log('→ Checking working directory status...')
   try {
-    const gitStatus = spawnSync('git', ['status', '--porcelain'], {
-      cwd: projectRoot,
-      encoding: 'utf-8'
-    })
-    if (gitStatus.stdout.trim()) {
+    if (hasWorkingTreeChanges()) {
       console.error('Error: Working directory is not clean. Please commit or stash your changes first.')
       process.exit(1)
     }
@@ -91,11 +105,20 @@ function main() {
     if (message) {
       console.log('→ Creating changeset...')
       run('pnpm', ['changeset:auto', versionType, message, '--package', 'bzsh-ui'])
+    } else {
+      console.error('Error: No unreleased changesets found.')
+      console.error('Run `pnpm ship patch "release note"` or create a changeset first.')
+      process.exit(1)
     }
   }
 
   console.log('→ Bumping version...')
   run('pnpm', ['version-packages'])
+
+  if (!hasWorkingTreeChanges()) {
+    console.error('Error: No version files were updated, nothing to release.')
+    process.exit(1)
+  }
 
   const newPkg = JSON.parse(readFileSync(resolve(projectRoot, 'packages', 'ui', 'package.json'), 'utf-8'))
   const newVersion = newPkg.version
