@@ -34,6 +34,43 @@
 - 使用 `pnpm cz` 命令（基于 git-cz）进行交互式提交
 - 提交前会自动运行 lint-staged 检查
 
+### cz 工具配置
+
+`git-cz` 通过查找特定名称的配置文件来加载自定义配置：
+
+**配置文件查找顺序**（从项目根目录开始）：
+
+1. `.git-cz.json`（推荐）
+2. `changelog.config.js`
+3. `changelog.config.cjs`
+4. `changelog.config.json`
+
+**注意**：
+
+- 配置文件名是 **`.git-cz.json`**（以点开头），不是 `git-cz.json`
+- `.czrc` 文件不是 git-cz 的配置文件，是 commitizen 的配置文件
+
+**配置示例**（`.git-cz.json`）：
+
+```json
+{
+  "disableEmoji": false,
+  "list": ["feat", "fix", "docs", "style", "refactor"],
+  "maxMessageLength": 64,
+  "minMessageLength": 3,
+  "questions": ["type", "scope", "subject", "body"],
+  "types": {
+    "feat": {
+      "description": "Features | 新功能",
+      "emoji": "✨",
+      "value": "feat"
+    }
+  }
+}
+```
+
+**配置修改后无需重新安装依赖**，重新运行 `pnpm cz` 即可生效。
+
 ## 开发流程
 
 ### 新增组件
