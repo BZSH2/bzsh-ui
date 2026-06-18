@@ -1,5 +1,11 @@
 # bzsh-ui
 
+## 0.1.7
+
+### Patch Changes
+
+- chore: 🚀 修复打包报错
+
 ## 0.1.6
 
 ### Patch Changes
