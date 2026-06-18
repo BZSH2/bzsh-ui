@@ -15,7 +15,7 @@
 
 | 参数     | 说明         | 类型                                                        | 默认值      |
 | -------- | ------------ | ----------------------------------------------------------- | ----------- |
-| type     | 按钮类型     | `'primary' \| 'success' \| 'warning' \| 'danger' \| 'info'` | `'primary'` |
+| type     | 按钮类型测试 | `'primary' \| 'success' \| 'warning' \| 'danger' \| 'info'` | `'primary'` |
 | size     | 按钮尺寸     | `'small' \| 'medium' \| 'large'`                            | `'medium'`  |
 | disabled | 是否禁用     | `boolean`                                                   | `false`     |
 | plain    | 是否朴素按钮 | `boolean`                                                   | `false`     |
