@@ -1,5 +1,11 @@
 # bzsh-ui
 
+## 0.1.9
+
+### Patch Changes
+
+- chore: 🚀 修复发布
+
 ## 0.1.8
 
 ### Patch Changes
