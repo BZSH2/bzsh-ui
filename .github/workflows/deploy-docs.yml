@@ -9,6 +9,9 @@ on:
       - 'packages/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   deploy-docs:
     runs-on: ubuntu-latest
@@ -20,6 +23,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
+        with:
+          version: 10
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -47,6 +52,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
           scp -i ~/.ssh/deploy_key -P $DEPLOY_PORT -o StrictHostKeyChecking=no \
             /tmp/bzsh-ui-docs.tar.gz \
             root@$DEPLOY_HOST:/opt/bzsh-ui/deploy/incoming.tar.gz
