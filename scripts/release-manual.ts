@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process'
-import { readFile } from 'node:fs/promises'
+import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import { repoRoot, uiPackageDir } from '../tooling/config/project-paths'
@@ -33,6 +33,7 @@ type ParsedVersion = {
 }
 
 const VALID_BUMP_TYPES = new Set<BumpType>(['patch', 'minor', 'major'])
+const changesetDir = path.join(repoRoot, '.changeset')
 const uiPackageJsonPath = path.join(uiPackageDir, 'package.json')
 
 /**
@@ -300,6 +301,25 @@ async function readReleasePackageInfo(): Promise<PackageInfo> {
   return {
     name: packageJson.name,
     version: packageJson.version,
+  }
+}
+
+/**
+ * 检查仓库中是否存在待发布的 changeset 文件
+ * @returns 如果存在待发布 changeset 则返回 true
+ */
+async function hasPendingChangesets(): Promise<boolean> {
+  try {
+    const entries = await readdir(changesetDir, { withFileTypes: true })
+
+    return entries.some(
+      (entry) =>
+        entry.isFile() &&
+        entry.name.endsWith('.md') &&
+        entry.name.toLowerCase() !== 'readme.md'
+    )
+  } catch {
+    return false
   }
 }
 
@@ -577,12 +597,14 @@ async function main(): Promise<void> {
   }
 
   const releasePackage = await readReleasePackageInfo()
+  const pendingChangesets = await hasPendingChangesets()
+  const shouldAutoVersion = !options.skipChangeset && !options.bumpType && !options.summary && pendingChangesets
   let nextReleasePackage = releasePackage
   let nextVersion = options.dryRun
     ? options.expectedVersion ?? releasePackage.version
     : releasePackage.version
 
-  if (options.preparedOnly) {
+  if (options.preparedOnly && !shouldAutoVersion) {
     if (!options.dryRun) {
       assertExpectedVersionMatches(releasePackage.version, options.expectedVersion)
     }

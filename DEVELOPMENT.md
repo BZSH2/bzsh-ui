@@ -93,7 +93,10 @@ pnpm sync:components       # 同步组件注册表
 pnpm ship
 ```
 
-如果当前版本已经在本地准备好并且代码已经同步到 `master`，`pnpm ship` 会直接基于当前版本创建 tag 和 GitHub Release。
+`pnpm ship` 的默认行为如下：
+
+- 如果仓库里存在待发布的 `.changeset/*.md` 文件，会先自动执行 `pnpm version-packages` 更新版本号
+- 如果没有待发布 changeset，则直接基于当前版本创建 tag 和 GitHub Release
 
 如果本机没有安装 `GitHub CLI (gh)`，脚本会自动退化为：
 
