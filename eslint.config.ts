@@ -2,17 +2,18 @@ import js from '@eslint/js'
 import tseslint from '@typescript-eslint/eslint-plugin'
 import tsParser from '@typescript-eslint/parser'
 import eslintConfigPrettier from 'eslint-config-prettier'
-import globals from 'globals'
 import importPlugin from 'eslint-plugin-import'
 import unusedImports from 'eslint-plugin-unused-imports'
 import vue from 'eslint-plugin-vue'
+import globals from 'globals'
 import vueParser from 'vue-eslint-parser'
+
 import {
   eslintJavaScriptFiles,
   eslintTypeScriptFiles,
   eslintVueFiles,
   workspaceIgnores,
-} from './tooling/config/lint.mjs'
+} from './tooling/config/lint.ts'
 
 const sharedImportRules = {
   'import/order': [

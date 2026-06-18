@@ -13,7 +13,7 @@
     "@bzsh-ui/internal": "workspace:*"
   },
   "scripts": {
-    "lint": "eslint index.ts button/index.ts button/props.ts scroll/index.ts scroll/props.ts",
+    "lint": "eslint \"**/*.ts\" \"**/*.vue\"",
     "typecheck": "vue-tsc -p ../../tsconfig.json --noEmit",
     "test": "vitest run --root ../.. tests/button.spec.ts"
   }

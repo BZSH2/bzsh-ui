@@ -49,7 +49,7 @@
 - `tooling/config`
   - 放置共享常量和任务映射。
   - 当前核心文件：
-    - `lint.mjs`
+    - `lint.ts`
     - `workspace-tasks.ts`
     - `root-tasks.ts`
 - `tooling/scripts`
@@ -149,7 +149,7 @@ Lint 链路目前分成两条：
 
 相关文件：
 
-- `tooling/config/lint.mjs`
+- `tooling/config/lint.ts`
 - `tooling/scripts/run-root-lint.ts`
 
 当前设计目标：
@@ -157,13 +157,35 @@ Lint 链路目前分成两条：
 - 根级 lint 不重复扫描包级源码。
 - 包级 lint 由各自 `package.json` 负责。
 
+### 包级 lint 配置
+
+各包的 `package.json` 中 `lint` 脚本采用 **glob 模式** 自动匹配：
+
+```json
+{
+  "scripts": {
+    "lint": "eslint \"**/*.ts\""
+  }
+}
+```
+
+- `packages/internal` / `packages/utils` / `packages/ui`：匹配 `**/*.ts`
+- `packages/components`：匹配 `**/*.ts` 和 `**/*.vue`（因为包含 Vue 文件）
+- `packages/theme-chalk`：使用 stylelint 匹配 `**/*.scss`
+
+**优势**：
+
+- 新增文件后无需手动修改 `package.json`。
+- 避免遗漏导致新文件未被 lint。
+- 配合 `.eslintignore` 和 `ignorePatterns` 配置可精确控制范围。
+
 ### 提交前增量检查
 
 提交前链路由以下文件负责：
 
 - `.husky/pre-commit`
 - `lint-staged.config.js`
-- `tooling/config/lint.mjs`
+- `tooling/config/lint.ts`
 
 当前规则：
 
@@ -228,7 +250,7 @@ Lint 链路目前分成两条：
 
 - 如果只是根脚本组合关系变化，优先改 `tooling/config/root-tasks.ts`。
 - 如果只是 workspace 范围或 app/package 名称变化，优先改 `tooling/config/workspace-tasks.ts`。
-- 如果只是 lint 范围或 staged 策略变化，优先改 `tooling/config/lint.mjs`。
+- 如果只是 lint 范围或 staged 策略变化，优先改 `tooling/config/lint.ts`。
 - 不要把复杂编排重新写回根 `package.json`。
 
 ### 新增包或应用

@@ -2,7 +2,7 @@ import {
   stylelintScssFiles,
   stylelintVueLikeFiles,
   workspaceIgnores,
-} from './tooling/config/lint.mjs'
+} from './tooling/config/lint.ts'
 
 /** @type {import('stylelint').Config} */
 export default {

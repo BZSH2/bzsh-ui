@@ -10,7 +10,7 @@
     "vue": "^3.5.17"
   },
   "scripts": {
-    "lint": "eslint index.ts with-install.ts",
+    "lint": "eslint \"**/*.ts\"",
     "typecheck": "vue-tsc -p ../../tsconfig.json --noEmit"
   }
 }

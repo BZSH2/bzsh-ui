@@ -7,7 +7,7 @@
     ".": "./index.ts"
   },
   "scripts": {
-    "lint": "eslint index.ts type/is-number.ts type/is-string.ts",
+    "lint": "eslint \"**/*.ts\"",
     "typecheck": "vue-tsc -p ../../tsconfig.json --noEmit",
     "test": "vitest run --root ../.. tests/utils.spec.ts"
   }

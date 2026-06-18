@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
-import { packageAliases } from '../../tooling/config/project-paths.ts'
+import { packageAliases } from '../../tooling/config/project-paths'
 
 export default defineConfig({
   plugins: [

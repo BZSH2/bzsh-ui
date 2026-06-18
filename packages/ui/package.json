@@ -35,7 +35,7 @@
   },
   "scripts": {
     "build": "vite build --config ./vite.config.ts",
-    "lint": "eslint index.ts defaults.ts make-installer.ts",
+    "lint": "eslint \"**/*.ts\"",
     "typecheck": "vue-tsc -p ../../tsconfig.json --noEmit"
   }
 }

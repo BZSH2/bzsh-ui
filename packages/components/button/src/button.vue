@@ -21,6 +21,9 @@ import { computed } from 'vue'
 
 import type { ButtonProps } from '../props'
 
+/**
+ * 组件属性，包含默认值
+ */
 const props = withDefaults(defineProps<ButtonProps>(), {
   type: 'primary',
   size: 'medium',
@@ -31,13 +34,27 @@ const props = withDefaults(defineProps<ButtonProps>(), {
   label: '',
 })
 
+/**
+ * 组件事件
+ */
 const emit = defineEmits<{
   click: [event: MouseEvent]
 }>()
 
+/**
+ * 按钮类型计算属性
+ */
 const buttonType = computed(() => props.type)
+
+/**
+ * 按钮尺寸计算属性，将 'medium' 映射为 Element Plus 的 'default'
+ */
 const buttonSize = computed(() => (props.size === 'medium' ? 'default' : props.size))
 
+/**
+ * 按钮点击事件处理
+ * @param event 鼠标点击事件
+ */
 const handleClick = (event: MouseEvent) => {
   if (props.disabled) {
     event.preventDefault()

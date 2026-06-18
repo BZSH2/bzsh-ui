@@ -5,7 +5,7 @@ import {
   componentsDir,
   docsDir,
   repoRoot,
-} from '../tooling/config/project-paths.ts'
+} from '../tooling/config/project-paths'
 import { syncComponentRegistry } from '../tooling/scripts/component-registry'
 
 type DeleteComponentMeta = {

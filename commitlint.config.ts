@@ -1,5 +1,3 @@
-import type { UserConfig } from '@commitlint/types'
-
 const LEVEL_ERROR = 2
 const LEVEL_WARNING = 1
 const LEVEL_OFF = 0
@@ -19,9 +17,9 @@ const COMMIT_TYPES = [
   'build',
 ] as const
 
-const Configuration: UserConfig = {
+const Configuration = {
   extends: ['@commitlint/config-conventional'],
-  ignores: [(commit) => commit.includes('init')],
+  ignores: [(commit: any) => commit.includes('init')],
   rules: {
     'body-leading-blank': [LEVEL_ERROR, 'always'],
     'footer-leading-blank': [LEVEL_WARNING, 'always'],
@@ -32,4 +30,5 @@ const Configuration: UserConfig = {
     'type-enum': [LEVEL_ERROR, 'always', [...COMMIT_TYPES]],
   },
 }
+
 export default Configuration

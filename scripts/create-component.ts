@@ -4,8 +4,14 @@ import path from 'node:path'
 import { componentsDir, repoRoot } from '../tooling/config/project-paths'
 import { syncComponentRegistry } from '../tooling/scripts/component-registry'
 
+/**
+ * 测试文件目录路径
+ */
 const testsDir = path.join(repoRoot, 'tests')
 
+/**
+ * 组件元数据类型
+ */
 type ComponentMeta = {
   componentName: string
   pascalName: string
@@ -13,11 +19,17 @@ type ComponentMeta = {
   cssName: string
 }
 
+/**
+ * 输出文件类型
+ */
 type OutputFile = {
   path: string
   content: string
 }
 
+/**
+ * 打印脚本使用说明
+ */
 function printUsage(): void {
   console.log(`Usage:
   pnpm component <name> [--dry-run]
@@ -29,6 +41,11 @@ Examples:
   pnpm component date-picker --dry-run`)
 }
 
+/**
+ * 解析命令行参数
+ * @param argv 命令行参数数组
+ * @returns 解析后的参数对象
+ */
 function parseArgs(argv: string[]): { dryRun: boolean; rawName: string } {
   if (argv.length === 0 || argv.includes('--help') || argv.includes('-h')) {
     printUsage()
@@ -48,6 +65,11 @@ function parseArgs(argv: string[]): { dryRun: boolean; rawName: string } {
   }
 }
 
+/**
+ * 将输入字符串分割成单词数组
+ * @param input 输入字符串
+ * @returns 小写单词数组
+ */
 function splitWords(input: string): string[] {
   return input
     .replace(/^Bz(?=[A-Z])/, '')
@@ -58,10 +80,20 @@ function splitWords(input: string): string[] {
     .filter(Boolean)
 }
 
+/**
+ * 将单词首字母大写
+ * @param word 输入单词
+ * @returns 首字母大写的单词
+ */
 function capitalize(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1)
 }
 
+/**
+ * 根据原始名称解析组件元数据
+ * @param rawName 原始组件名称
+ * @returns 组件元数据对象
+ */
 function resolveComponentMeta(rawName: string): ComponentMeta {
   const words = splitWords(rawName)
 
@@ -82,6 +114,11 @@ function resolveComponentMeta(rawName: string): ComponentMeta {
   }
 }
 
+/**
+ * 检查路径是否存在
+ * @param targetPath 要检查的路径
+ * @returns 如果路径存在则返回 true
+ */
 async function pathExists(targetPath: string): Promise<boolean> {
   try {
     await stat(targetPath)
@@ -91,6 +128,11 @@ async function pathExists(targetPath: string): Promise<boolean> {
   }
 }
 
+/**
+ * 构建 Props 类型定义文件模板
+ * @param pascalName PascalCase 格式的组件名
+ * @returns Props 文件内容
+ */
 function buildPropsTemplate(pascalName: string): string {
   return `export interface ${pascalName}Props {
   label?: string
@@ -98,6 +140,11 @@ function buildPropsTemplate(pascalName: string): string {
 `
 }
 
+/**
+ * 构建 Vue 组件模板
+ * @param meta 组件元数据
+ * @returns Vue 组件文件内容
+ */
 function buildVueTemplate(meta: ComponentMeta): string {
   return `<template>
   <div class="${meta.cssName}">
@@ -115,6 +162,11 @@ withDefaults(defineProps<${meta.pascalName}Props>(), {
 `
 }
 
+/**
+ * 构建组件入口文件模板
+ * @param meta 组件元数据
+ * @returns 入口文件内容
+ */
 function buildIndexTemplate(meta: ComponentMeta): string {
   return `import ${meta.pascalName} from './src/${meta.kebabName}.vue'
 import { withInstall } from '../../internal/with-install'
@@ -126,6 +178,11 @@ export * from './props'
 `
 }
 
+/**
+ * 构建样式文件模板
+ * @param meta 组件元数据
+ * @returns 样式文件内容
+ */
 function buildStyleTemplate(meta: ComponentMeta): string {
   return `.${meta.cssName} {
   display: inline-flex;
@@ -134,6 +191,11 @@ function buildStyleTemplate(meta: ComponentMeta): string {
 `
 }
 
+/**
+ * 构建测试文件模板
+ * @param meta 组件元数据
+ * @returns 测试文件内容
+ */
 function buildTestTemplate(meta: ComponentMeta): string {
   return `import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
@@ -164,6 +226,9 @@ describe('${meta.componentName}', () => {
 `
 }
 
+/**
+ * 主函数：创建组件脚手架
+ */
 async function main(): Promise<void> {
   const { rawName, dryRun } = parseArgs(process.argv.slice(2))
   const meta = resolveComponentMeta(rawName)
@@ -178,7 +243,7 @@ async function main(): Promise<void> {
     )
   }
 
-  // Create the source files first, then let the registry script regenerate aggregates.
+  // 先创建源文件，然后让注册表脚本重新生成聚合文件
   const outputs: OutputFile[] = [
     {
       path: path.join(componentRoot, 'props.ts'),
@@ -222,7 +287,7 @@ async function main(): Promise<void> {
     outputs.map((output) => writeFile(output.path, output.content, 'utf8'))
   )
 
-  // Regenerate shared exports, installer defaults, and theme imports from the directory tree.
+  // 从目录树重新生成共享导出、安装程序默认值和主题导入
   await syncComponentRegistry()
 
   console.log(`Created component scaffold: ${meta.componentName}`)

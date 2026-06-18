@@ -1,0 +1,95 @@
+# 开发工作流规范
+
+## 提交规范
+
+### 提交信息格式
+
+使用 Conventional Commits 规范：
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+### Type 类型
+
+- `feat`: 新功能
+- `fix`: Bug 修复
+- `docs`: 文档变更
+- `style`: 代码格式变更（不影响功能）
+- `refactor`: 重构
+- `perf`: 性能优化
+- `test`: 测试相关
+- `chore`: 构建/工程依赖/工具
+- `ci`: CI 配置
+- `release`: 发版提交
+- `revert`: 回退
+- `build`: 打包构建
+
+### 提交工具
+
+- 使用 `pnpm cz` 命令（基于 git-cz）进行交互式提交
+- 提交前会自动运行 lint-staged 检查
+
+## 开发流程
+
+### 新增组件
+
+1. 使用 `pnpm component <name>` 创建组件
+2. 编辑组件代码和样式
+3. 运行 `pnpm test` 确保测试通过
+4. 运行 `pnpm lint` 确保代码规范
+5. 提交代码
+
+### 修改工具函数
+
+1. 直接编辑 `packages/utils/` 下的文件
+2. 运行 `pnpm test:packages` 运行测试
+3. 提交代码
+
+### 修改配置
+
+1. 编辑对应的配置文件
+2. 运行 `pnpm typecheck` 确保类型正确
+3. 运行 `pnpm lint` 确保规范
+4. 提交代码
+
+### 修改文档
+
+1. 编辑对应的 `.md` 文件
+2. 如果新增了项目级文档，在 `README.md` 中添加链接
+3. 如果新增了 Agent 规则，在 `.agent/README.md` 中添加条目
+4. 提交代码
+
+## 分支策略
+
+- `main`: 主分支，稳定版本
+- `feat/*`: 功能分支
+- `fix/*`: 修复分支
+
+## 发布流程
+
+1. 在功能分支完成开发
+2. 创建 PR 到 `main`
+3. CI 运行 `pnpm release:verify` 验证
+4. 合并后自动发布
+
+## CI/CD
+
+- `.github/workflows/release.yml`: 发布流程
+- `.github/workflows/deploy-docs.yml`: 文档部署
+
+## Lint 流程
+
+### 提交前
+
+- Husky 在 commit 时自动运行 lint-staged
+- 只检查暂存区的文件
+
+### 全量检查
+
+- `pnpm lint`: 检查整个项目
+- `pnpm lint:fix`: 自动修复可修复的问题
