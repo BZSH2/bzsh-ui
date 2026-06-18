@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -28,12 +28,8 @@ function run(cmd: string, args: string[] = [], options: Record<string, unknown> 
 
 function hasPendingChangesets() {
   try {
-    const executable = resolveExecutable('npx')
-    const { status } = spawnSync(executable, ['changeset', 'status'], {
-      cwd: projectRoot,
-      shell: process.platform === 'win32' && executable.endsWith('.cmd')
-    })
-    return status === 0
+    const changesetDir = resolve(projectRoot, '.changeset')
+    return readdirSync(changesetDir).some((file) => file.endsWith('.md') && file !== 'README.md')
   } catch {
     return false
   }
