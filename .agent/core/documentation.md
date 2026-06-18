@@ -11,21 +11,21 @@
 ### 1. 项目级文档
 
 - **位置**：项目根目录
-- **命名**：UPPER-KEBAB-CASE 格式（如 `ARCHITECTURE.md`、`CHANGELOG.md`）
+- **命名**：UPPER-KEBAB-CASE 格式，如 `ARCHITECTURE.md`、`CHANGELOG.md`
 - **作用**：项目架构、规范、流程等说明
 - **示例**：`ARCHITECTURE.md`、`CONTRIBUTING.md`、`DEPLOYMENT.md`
 
 ### 2. 组件文档
 
 - **位置**：`apps/docs/components/` 目录
-- **命名**：kebab-case 格式（如 `button.md`、`date-picker.md`）
+- **命名**：kebab-case 格式，如 `button.md`、`date-picker.md`
 - **作用**：组件的 API、用法示例说明
 - **由组件库脚本自动管理**：`pnpm component` 命令会自动创建对应的文档文件
 
 ### 3. 指南文档
 
 - **位置**：`apps/docs/guide/` 目录
-- **命名**：kebab-case 格式（如 `getting-started.md`、`installation.md`）
+- **命名**：kebab-case 格式，如 `getting-started.md`、`installation.md`
 - **作用**：教程、使用指南等
 
 ## 项目级文档规则
@@ -40,15 +40,15 @@
 
 - 所有项目级文档必须在根目录 `README.md` 的 `## Docs` 部分添加链接
 - 链接格式：`- 标题: [文件名.md](./文件名.md)`
-- 顺序按字母排序（先 `AGENT` 再 `ARCHITECTURE`）
+- 顺序按字母排序，先 `AGENT` 再 `ARCHITECTURE`
 
 ### 文档结构
 
 每个项目级文档应包含：
 
-- 一级标题（文档名称）
+- 一级标题
 - 概述或简介
-- 目录（可选，但建议）
+- 目录，可选但建议
 - 主要内容章节
 
 ### 示例
@@ -67,8 +67,9 @@
 Agent 规则相关文档统一放在 `.agent/` 目录下：
 
 - 不要再创建独立的 `AGENT_RULES.md` 文件
-- 所有 Agent 相关规则都在 `.agent/` 目录中维护
-- 见 [.agent/README.md](./README.md)
+- 通用规则放在 `.agent/core/`
+- 组件、工具函数等领域规则放在 `.agent/domains/`
+- 总入口见 [README.md](../README.md)
 
 ## 禁止事项
 

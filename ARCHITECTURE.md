@@ -6,7 +6,7 @@
 
 当前仓库已经按以下原则收敛：
 
-- `apps/*` 负责运行态和文档站点。
+- `docs/` 和 `play/` 负责运行态和文档站点。
 - `packages/*` 负责组件库源码、内部工具和发布产物。
 - `tooling/config/*` 负责共享配置常量。
 - `tooling/scripts/*` 负责把共享配置转换成可执行命令。
@@ -14,13 +14,13 @@
 
 ## 目录分层
 
-### `apps`
+### `docs` 与 `play`
 
-- `apps/docs`
+- `docs`
   - VitePress 文档站点。
   - 对外提供 `dev/build/preview` 标准脚本。
-  - 产物目录为 `apps/docs/.vitepress/dist`。
-- `apps/play`
+  - 产物目录为 `docs/.vitepress/dist`。
+- `play`
   - 本地调试 playground。
   - 用于联调组件和快速验证运行效果。
   - 对外提供 `dev/build/preview` 标准脚本。
@@ -187,7 +187,7 @@ Lint 链路目前分成两条：
 当前规则：
 
 - 只处理暂存区文件。
-- 会过滤 `dist`、`coverage`、`node_modules`、`apps/docs/.vitepress/cache`、`apps/docs/.vitepress/dist` 等非源码目录。
+- 会过滤 `dist`、`coverage`、`node_modules`、`docs/.vitepress/cache`、`docs/.vitepress/dist` 等非源码目录。
 - `eslint`、`stylelint`、`prettier` 的 staged 行为复用共享配置，而不是在多个文件里重复声明。
 
 ## 组件与样式聚合
@@ -219,23 +219,24 @@ Lint 链路目前分成两条：
 
 ### Release Workflow
 
-`.github/workflows/release.yml` 当前遵循以下顺序：
+`.github/workflows/auto-release.yml` 与 `.github/workflows/publish-npm.yml` 当前遵循以下顺序：
 
-1. 由 GitHub Release 创建事件触发。
-2. 检出本次 Release 对应的 tag。
-3. 安装依赖。
-4. 执行 `pnpm build`。
-5. 执行 `pnpm release`。
+1. 开发者在本地运行 `pnpm ship`。
+2. 脚本自动更新版本文件并推送到 `master`。
+3. `auto-release.yml` 检测版本变化并创建 GitHub Release。
+4. `publish-npm.yml` 在 release 工作流成功后启动。
+5. 安装依赖并执行 `pnpm build`。
+6. 执行 `pnpm release`。
 
-这意味着版本号更新不再由 Action 自动完成，而是要求开发者先在本地运行 `pnpm version-packages`，提交版本文件并创建 GitHub Release。workflow 只负责最小发布链路和发布凭证，更多质量校验放在本地提交阶段完成。
+这意味着开发者不再需要手动打 tag 或手动创建 GitHub Release。本地只负责触发 `pnpm ship`，后续 Release 与 npm 发布由 CI 串联完成。
 
 ### Docs Workflow
 
 `.github/workflows/deploy-docs.yml` 当前约定：
 
-- 监听 `apps/docs/**`、`package.json` 和 `pnpm-lock.yaml` 变更。
+- 监听 `docs/**`、`package.json` 和 `pnpm-lock.yaml` 变更。
 - 通过 `pnpm run build:docs` 构建文档。
-- 从 `apps/docs/.vitepress/dist` 打包并部署。
+- 从 `docs/.vitepress/dist` 打包并部署。
 
 ## 维护约定
 
@@ -251,7 +252,7 @@ Lint 链路目前分成两条：
 ### 新增包或应用
 
 - 新增 `packages/*` 时，先补齐包自己的 `scripts`。
-- 新增 `apps/*` 时，优先提供标准 `dev/build/preview`。
+- 新增 `docs/` 或 `play/` 这类根级应用时，优先提供标准 `dev/build/preview`。
 - 需要接入根任务时，再把它们注册到 `workspace-tasks.ts` 或 `root-tasks.ts`。
 
 ### 新增发布或校验流程

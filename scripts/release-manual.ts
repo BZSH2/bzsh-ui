@@ -45,6 +45,19 @@ function hasWorkingTreeChanges() {
   return result.stdout.trim().length > 0
 }
 
+function getWorkingTreeFiles() {
+  const result = spawnSync('git', ['status', '--porcelain'], {
+    cwd: projectRoot,
+    encoding: 'utf-8'
+  })
+
+  return result.stdout
+    .split('\n')
+    .map((line) => line.trimEnd())
+    .filter((line) => line.length > 3)
+    .map((line) => line.slice(3))
+}
+
 function getDefaultChangesetSummary() {
   const result = spawnSync('git', ['log', '-1', '--pretty=%s'], {
     cwd: projectRoot,
@@ -171,6 +184,22 @@ function updateRootChangelog(version: string, changes: PendingChange[]) {
   writeFileSync(rootChangelogPath, nextContent, 'utf-8')
 }
 
+function stageReleaseFiles() {
+  const changedFiles = getWorkingTreeFiles()
+  const releaseFiles = changedFiles.filter((file) =>
+    file === 'CHANGELOG.md' ||
+    file === 'packages/ui/package.json' ||
+    file.startsWith('.changeset/')
+  )
+
+  if (releaseFiles.length === 0) {
+    console.error('Error: No release files were detected to commit.')
+    process.exit(1)
+  }
+
+  run('git', ['add', '--', ...releaseFiles])
+}
+
 function main() {
   console.log('→ Checking required tools...')
 
@@ -222,7 +251,7 @@ function main() {
   updateRootChangelog(newVersion, pendingChanges)
 
   console.log('→ Committing changes...')
-  run('git', ['add', '.'])
+  stageReleaseFiles()
   run('git', ['commit', '-m', `chore: release ${newTag}`])
 
   console.log('→ Pushing to origin...')

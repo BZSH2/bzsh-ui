@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - 'apps/docs/**'
+      - 'docs/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
   workflow_dispatch:
@@ -39,7 +39,7 @@ jobs:
 
       - name: Create Archive
         run: |
-          cd apps/docs/.vitepress/dist
+          cd docs/.vitepress/dist
           tar -czf /tmp/bzsh-ui-docs.tar.gz .
 
       - name: Deploy Docs to Server

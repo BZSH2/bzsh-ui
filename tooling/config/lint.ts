@@ -5,8 +5,8 @@ export const workspaceIgnores = [
   '**/dist/**',
   '**/coverage/**',
   '**/node_modules/**',
-  'apps/docs/.vitepress/cache/**',
-  'apps/docs/.vitepress/dist/**',
+  'docs/.vitepress/cache/**',
+  'docs/.vitepress/dist/**',
 ]
 
 /**
@@ -39,7 +39,7 @@ export const rootLintTargets = {
 /**
  * 根目录 lint 时需要忽略的模式
  */
-export const rootLintIgnorePatterns = ['packages/**', 'apps/**/dist/**']
+export const rootLintIgnorePatterns = ['packages/**', 'docs/**/dist/**', 'play/**/dist/**']
 
 /**
  * 需要 lint 的文件扩展名分类
@@ -75,8 +75,8 @@ const isWorkspaceIgnoredPath = (filePath: string) => {
     normalized === 'node_modules' ||
     normalized.startsWith('node_modules/') ||
     normalized.includes('/node_modules/') ||
-    normalized.startsWith('apps/docs/.vitepress/cache/') ||
-    normalized.startsWith('apps/docs/.vitepress/dist/')
+    normalized.startsWith('docs/.vitepress/cache/') ||
+    normalized.startsWith('docs/.vitepress/dist/')
   )
 }
 

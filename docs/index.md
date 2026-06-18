@@ -4,5 +4,5 @@
 
 ## 开始使用
 
-- 查看 [快速开始](./guide/getting-started) 了解接入方式
+- 查看 [快速开始](./guide/getting-started) 了解接入方式1
 - 通过文档站顶部导航或左侧侧边栏浏览组件列表

@@ -38,7 +38,7 @@ function toPascalCase(kebabName: string): string {
 
 ## TypeScript 规范
 
-- 优先使用 `interface` 而非 `type`（除非需要联合类型）
+- 优先使用 `interface` 而非 `type`，除非需要联合类型
 - 公共 API 必须有类型定义
 - 函数参数和返回值必须标注类型
 - 使用 `readonly` 修饰不可变数据

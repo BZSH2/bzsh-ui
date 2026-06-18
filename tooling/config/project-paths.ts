@@ -11,10 +11,6 @@ const configDir = path.dirname(fileURLToPath(import.meta.url))
  */
 export const repoRoot = path.resolve(configDir, '..', '..')
 /**
- * apps 目录路径，包含文档和演示应用
- */
-export const appsDir = path.join(repoRoot, 'apps')
-/**
  * packages 目录路径，包含组件库的核心包
  */
 export const packagesDir = path.join(repoRoot, 'packages')
@@ -26,11 +22,11 @@ export const toolingDir = path.join(repoRoot, 'tooling')
 /**
  * 文档应用目录路径
  */
-export const docsDir = path.join(appsDir, 'docs')
+export const docsDir = path.join(repoRoot, 'docs')
 /**
  * 开发演示应用目录路径
  */
-export const playDir = path.join(appsDir, 'play')
+export const playDir = path.join(repoRoot, 'play')
 
 /**
  * 组件包目录路径

@@ -116,9 +116,7 @@ importers:
         specifier: ^3.0.1
         version: 3.3.5(typescript@5.9.3)
 
-  apps/docs: {}
-
-  apps/play: {}
+  docs: {}
 
   packages/components:
     dependencies:
@@ -159,6 +157,8 @@ importers:
         version: 3.5.38(typescript@5.9.3)
 
   packages/utils: {}
+
+  play: {}
 
 packages:
   '@algolia/abtesting@1.20.0':

@@ -28,17 +28,16 @@
 
 ### 配置优势
 
-- ✅ **自动发现**：新增文件无需修改 `package.json`
-- ✅ **避免遗漏**：所有匹配文件都会被检查
-- ✅ **维护简单**：不需要手动同步文件列表
-- ✅ **团队友好**：减少人为错误
+- 自动发现：新增文件无需修改 `package.json`
+- 避免遗漏：所有匹配文件都会被检查
+- 维护简单：不需要手动同步文件列表
+- 团队友好：减少人为错误
 
-## 反模式（禁止）
+## 反模式
 
-### ❌ 手动列出文件
+### 不要手动列出文件
 
 ```json
-// 不要这样做
 {
   "scripts": {
     "lint": "eslint index.ts with-install.ts button/index.ts button/props.ts"
@@ -46,7 +45,7 @@
 }
 ```
 
-**问题**：
+这样做会带来：
 
 - 新增文件后必须手动修改 `package.json`
 - 容易遗漏，导致新文件未通过 lint 检查
@@ -60,7 +59,6 @@
 如果需要排除某些文件，使用 `.eslintignore` 或 ESLint 配置的 `ignores` 字段：
 
 ```javascript
-// eslint.config.ts
 {
   ignores: ['**/dist/**', '**/node_modules/**']
 }
@@ -81,11 +79,7 @@
 glob 模式中的 `**` 必须用引号包裹：
 
 ```json
-// 正确
 "lint": "eslint \"**/*.ts\""
-
-// 错误（shell 会展开 **）
-"lint": "eslint **/*.ts"
 ```
 
 ## 检查清单
