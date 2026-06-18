@@ -110,9 +110,11 @@
 ## 发布流程
 
 1. 在功能分支完成开发
-2. 创建 PR 到 `main`
-3. CI 运行 `pnpm build` 验证
-4. 合并后自动发布
+2. 创建 PR 到 `master`
+3. 在本地运行 `pnpm version-packages` 更新需要发布的包版本
+4. 提交版本文件并合并到 `master`
+5. 为这次发布创建 Git tag 和 GitHub Release
+6. CI 在 GitHub Release 创建后执行发布
 
 ## CI/CD
 
@@ -126,7 +128,9 @@
 - 发布阶段不再执行 `pnpm test`
 - 发布阶段不再执行 `pnpm format:check`
 - `lint` 放在开发者本地提交阶段通过 `lint-staged` 执行
-- Release Action 只保留 `build`
+- 版本号更新必须由开发者在本地执行 `pnpm version-packages`
+- Release Action 改为在 GitHub Release 创建后触发
+- Release Action 只保留 `build` 和 `pnpm release`
 
 ## Lint 流程
 

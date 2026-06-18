@@ -85,12 +85,117 @@ pnpm sync:components       # 同步组件注册表
 
 ### 发布相关
 
+当前仓库的 npm 发布不是在 push 后立即触发，而是在 **创建 GitHub Release** 后由 CI 自动执行。
+
+推荐优先使用一键发布脚本：
+
 ```bash
-pnpm changeset             # 创建 changeset
-pnpm changesets:au          # 自动创建 changeset
-pnpm version-packages      # 更新版本
-pnpm release               # 发布
+pnpm release:manual patch "修复按钮样式问题"
 ```
+
+这条命令会自动完成以下步骤：
+
+- 创建 changeset
+- 执行 `pnpm version-packages`
+- 提交版本变更
+- 推送到 `master`
+- 创建并推送 tag
+- 创建 GitHub Release
+- 触发 CI 自动发布到 npm
+
+常用参数示例：
+
+```bash
+pnpm release:manual minor "新增表单组件"
+pnpm release:manual minor "新增表单组件" --version 0.2.0
+pnpm release:manual patch "修复发布流程" --dry-run
+pnpm release:manual --skip-changeset
+```
+
+- `--dry-run`：只打印将要执行的命令，不实际修改仓库或远程状态
+- `--skip-changeset`：跳过自动创建 changeset，适合你已经手动准备好 changeset 的情况
+- `--version`：显式指定目标版本，脚本会校验 `pnpm version-packages` 的结果必须与该版本完全一致
+- 运行前请确认当前分支是干净的 `master`，并且本机已完成 `gh auth login`
+- 脚本会自动读取当前包版本和仓库最新 `v*` tag，并校验新 tag 与当前版本一致且版本号递增
+- 脚本会自动 `fetch` 并检查本地 `master` 与 `origin/master` 是否完全一致，避免基于过期代码发版
+- 脚本还会检查远程同名 tag 与 GitHub Release 是否已存在，避免重复发版
+
+如果你想手动执行完整流程，也可以按下面的 SOP 操作：
+
+#### 1. 创建 changeset
+
+如果这次改动需要发版，先在本地创建 changeset：
+
+```bash
+pnpm changeset
+```
+
+如果你已经有自定义自动生成逻辑，也可以使用：
+
+```bash
+pnpm changeset:auto
+```
+
+#### 2. 在本地更新版本号
+
+确认 changeset 无误后，在本地执行：
+
+```bash
+pnpm version-packages
+```
+
+这一步会更新相关包的版本号和 changelog。
+
+#### 3. 提交版本变更并推送
+
+```bash
+git add .
+git commit -m "chore: release v0.1.0"
+git push origin master
+```
+
+#### 4. 为本次发布创建 tag 并推送
+
+把下面的 `v0.1.0` 替换成你这次实际要发布的版本号：
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+#### 5. 创建 GitHub Release
+
+方式一：使用 GitHub CLI
+
+```bash
+gh release create v0.1.0 --title "v0.1.0" --notes "release v0.1.0"
+```
+
+方式二：使用 GitHub 网页
+
+1. 打开仓库的 `Releases` 页面
+2. 点击 `Draft a new release`
+3. 选择刚刚推送的 tag，例如 `v0.1.0`
+4. 填写标题和发布说明
+5. 点击 `Publish release`
+
+#### 6. 等待 CI 自动发布到 npm
+
+当 GitHub Release 创建成功后，[release.yml](./.github/workflows/release.yml) 会自动触发，并执行：
+
+```bash
+pnpm build
+pnpm release
+```
+
+#### 发布前检查
+
+发布前建议确认以下几点：
+
+- 需要发布的包版本号已经由 `pnpm version-packages` 正确更新
+- npm 上还不存在相同版本号
+- 仓库 Secrets 中已正确配置 `BZSH_UI_TOKEN`
+- 本地代码和远程 `master` 保持一致
 
 ## 开发流程
 

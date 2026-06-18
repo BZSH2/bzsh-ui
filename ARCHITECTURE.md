@@ -221,19 +221,19 @@ Lint 链路目前分成两条：
 
 `.github/workflows/release.yml` 当前遵循以下顺序：
 
-1. 安装依赖。
-2. 执行 `pnpm build`。
-3. 自动补 changeset。
-4. 执行 `pnpm version-packages`。
+1. 由 GitHub Release 创建事件触发。
+2. 检出本次 Release 对应的 tag。
+3. 安装依赖。
+4. 执行 `pnpm build`。
 5. 执行 `pnpm release`。
 
-这样 workflow 只负责最小发布链路和发布凭证，更多质量校验放在本地提交阶段完成。
+这意味着版本号更新不再由 Action 自动完成，而是要求开发者先在本地运行 `pnpm version-packages`，提交版本文件并创建 GitHub Release。workflow 只负责最小发布链路和发布凭证，更多质量校验放在本地提交阶段完成。
 
 ### Docs Workflow
 
 `.github/workflows/deploy-docs.yml` 当前约定：
 
-- 监听 `apps/docs/**` 和 `packages/**` 变更。
+- 监听 `apps/docs/**`、`package.json` 和 `pnpm-lock.yaml` 变更。
 - 通过 `pnpm run build:docs` 构建文档。
 - 从 `apps/docs/.vitepress/dist` 打包并部署。
 

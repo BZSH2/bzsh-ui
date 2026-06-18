@@ -36,7 +36,8 @@
     "deleteC": "esno ./scripts/delete-component.ts",
     "utils": "esno ./scripts/create-utils.ts",
     "version-packages": "changeset version",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "tag": "esno ./scripts/release-manual.ts"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
