@@ -44,6 +44,16 @@ function hasWorkingTreeChanges() {
   return result.stdout.trim().length > 0
 }
 
+function getDefaultChangesetSummary() {
+  const result = spawnSync('git', ['log', '-1', '--pretty=%s'], {
+    cwd: projectRoot,
+    encoding: 'utf-8'
+  })
+
+  const summary = result.stdout.trim()
+  return summary || 'release updates'
+}
+
 type VersionType = 'patch' | 'minor' | 'major'
 const validVersionTypes = ['patch', 'minor', 'major'] as const
 
@@ -98,19 +108,9 @@ function main() {
 
   const hasChangesets = hasPendingChangesets()
   if (!hasChangesets) {
-    if (message) {
-      console.log('→ Creating changeset...')
-      run('pnpm', ['changeset:auto', versionType, message, '--package', 'bzsh-ui'])
-    } else {
-      console.log('→ No unreleased changesets found, starting interactive changeset...')
-      run('pnpm', ['changeset'])
-
-      if (!hasPendingChangesets()) {
-        console.error('Error: No unreleased changesets were created.')
-        console.error('Finish the changeset prompt or run `pnpm ship patch "release note"`.')
-        process.exit(1)
-      }
-    }
+    const summary = message || getDefaultChangesetSummary()
+    console.log(`→ Creating changeset automatically: ${summary}`)
+    run('pnpm', ['changeset:auto', versionType, summary, '--package', 'bzsh-ui'])
   }
 
   console.log('→ Bumping version...')
