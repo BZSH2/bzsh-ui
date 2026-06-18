@@ -106,9 +106,14 @@ function main() {
       console.log('→ Creating changeset...')
       run('pnpm', ['changeset:auto', versionType, message, '--package', 'bzsh-ui'])
     } else {
-      console.error('Error: No unreleased changesets found.')
-      console.error('Run `pnpm ship patch "release note"` or create a changeset first.')
-      process.exit(1)
+      console.log('→ No unreleased changesets found, starting interactive changeset...')
+      run('pnpm', ['changeset'])
+
+      if (!hasPendingChangesets()) {
+        console.error('Error: No unreleased changesets were created.')
+        console.error('Finish the changeset prompt or run `pnpm ship patch "release note"`.')
+        process.exit(1)
+      }
     }
   }
 
