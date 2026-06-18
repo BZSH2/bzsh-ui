@@ -104,7 +104,7 @@
     "README.md": "*.md",
     ".env": ".env.*, .envrc, env.d.ts",
     "vite.config.*": "vitest.config.*, playwright.config.*, uno.config.*, index.html",
-    "eslint.config.*": ".prettierignore, .prettierrc.json, .stylelintignore, .oxlintrc.json, .oxfmtrc.json, stylelint.config.*, commitlint.config.*, lint-staged.config.*, .czrc, git-cz.json, changelog.config.ts",
+    "eslint.config.*": ".prettierignore, .prettierrc.json, .stylelintignore, .oxlintrc.json, .oxfmtrc.json, stylelint.config.*, commitlint.config.*, lint-staged.config.*, .czrc, .git-cz.json, changelog.config.ts",
     "docker-compose.product.yml": ".dockerignore,nginx.conf",
     "Dockerfile": "docker-compose.prod.yml, .dockerignore"
   },
