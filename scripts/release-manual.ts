@@ -1,10 +1,12 @@
 import { spawnSync } from 'node:child_process'
-import { readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const projectRoot = resolve(__dirname, '..')
+const changesetDir = resolve(projectRoot, '.changeset')
+const rootChangelogPath = resolve(projectRoot, 'CHANGELOG.md')
 
 function resolveExecutable(cmd: string) {
   if (process.platform === 'win32' && (cmd === 'pnpm' || cmd === 'npx')) {
@@ -28,7 +30,6 @@ function run(cmd: string, args: string[] = [], options: Record<string, unknown> 
 
 function hasPendingChangesets() {
   try {
-    const changesetDir = resolve(projectRoot, '.changeset')
     return readdirSync(changesetDir).some((file) => file.endsWith('.md') && file !== 'README.md')
   } catch {
     return false
@@ -55,6 +56,10 @@ function getDefaultChangesetSummary() {
 }
 
 type VersionType = 'patch' | 'minor' | 'major'
+type PendingChange = {
+  bumpType: VersionType
+  summary: string
+}
 const validVersionTypes = ['patch', 'minor', 'major'] as const
 
 function isVersionType(value: string): value is VersionType {
@@ -78,6 +83,92 @@ function getNextVersionFromArgs() {
   }
 
   return { versionType, message }
+}
+
+function getPendingChanges() {
+  try {
+    return readdirSync(changesetDir)
+      .filter((file) => file.endsWith('.md') && file !== 'README.md')
+      .map((file) => {
+        const content = readFileSync(resolve(changesetDir, file), 'utf-8')
+        const match = content.match(/^---\s*([\s\S]*?)\s*---\s*([\s\S]*)$/)
+        const frontmatter = match?.[1] ?? ''
+        const summary = (match?.[2] ?? content).trim()
+        const bumpTypeMatch = frontmatter.match(/:\s*(patch|minor|major)/)
+        const bumpType = (bumpTypeMatch?.[1] ?? 'patch') as VersionType
+
+        return {
+          bumpType,
+          summary,
+        }
+      })
+      .filter((change) => change.summary.length > 0)
+  } catch {
+    return []
+  }
+}
+
+function updateRootChangelog(version: string, changes: PendingChange[]) {
+  const sections: Array<{ title: string; items: string[] }> = []
+  const order: VersionType[] = ['major', 'minor', 'patch']
+  const titleMap: Record<VersionType, string> = {
+    major: 'Major Changes',
+    minor: 'Minor Changes',
+    patch: 'Patch Changes',
+  }
+
+  for (const bumpType of order) {
+    const items = changes
+      .filter((change) => change.bumpType === bumpType)
+      .map((change) => change.summary.trim())
+
+    if (items.length > 0) {
+      sections.push({
+        title: titleMap[bumpType],
+        items,
+      })
+    }
+  }
+
+  if (sections.length === 0) {
+    sections.push({
+      title: 'Patch Changes',
+      items: ['release updates'],
+    })
+  }
+
+  const entryLines = [`## ${version}`, '']
+
+  for (const section of sections) {
+    entryLines.push(`### ${section.title}`, '')
+    for (const item of section.items) {
+      entryLines.push(`- ${item}`)
+    }
+    entryLines.push('')
+  }
+
+  const entry = `${entryLines.join('\n').trimEnd()}\n\n`
+  const existing = existsSync(rootChangelogPath)
+    ? readFileSync(rootChangelogPath, 'utf-8')
+    : '# bzsh-ui\n\n'
+
+  if (!existing.trim()) {
+    writeFileSync(rootChangelogPath, `# bzsh-ui\n\n${entry}`, 'utf-8')
+    return
+  }
+
+  const normalized = existing.replace(/\r\n/g, '\n')
+  const headingMatch = normalized.match(/^(# .+\n\n?)/)
+
+  if (!headingMatch) {
+    writeFileSync(rootChangelogPath, `# bzsh-ui\n\n${entry}${normalized.trimStart()}\n`, 'utf-8')
+    return
+  }
+
+  const heading = headingMatch[1]
+  const rest = normalized.slice(heading.length).trimStart()
+  const nextContent = rest ? `${heading}${entry}${rest}\n` : `${heading}${entry}`
+  writeFileSync(rootChangelogPath, nextContent, 'utf-8')
 }
 
 function main() {
@@ -113,6 +204,8 @@ function main() {
     run('pnpm', ['changeset:auto', versionType, summary, '--package', 'bzsh-ui'])
   }
 
+  const pendingChanges = getPendingChanges()
+
   console.log('→ Bumping version...')
   run('pnpm', ['version-packages'])
 
@@ -124,6 +217,9 @@ function main() {
   const newPkg = JSON.parse(readFileSync(resolve(projectRoot, 'packages', 'ui', 'package.json'), 'utf-8'))
   const newVersion = newPkg.version
   const newTag = `v${newVersion}`
+
+  console.log('→ Updating root changelog...')
+  updateRootChangelog(newVersion, pendingChanges)
 
   console.log('→ Committing changes...')
   run('git', ['add', '.'])
