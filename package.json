@@ -37,7 +37,8 @@
     "utils": "esno ./scripts/create-utils.ts",
     "version-packages": "changeset version",
     "release": "changeset publish",
-    "tag": "esno ./scripts/release-manual.ts"
+    "ship": "esno ./scripts/release-manual.ts",
+    "tag": "pnpm ship"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.5",

@@ -90,7 +90,21 @@ pnpm sync:components       # 同步组件注册表
 推荐优先使用一键发布脚本：
 
 ```bash
-pnpm release:manual patch "修复按钮样式问题"
+pnpm ship
+```
+
+如果当前版本已经在本地准备好并且代码已经同步到 `master`，`pnpm ship` 会直接基于当前版本创建 tag 和 GitHub Release。
+
+如果本机没有安装 `GitHub CLI (gh)`，脚本会自动退化为：
+
+- 先推送 tag
+- 再打开 GitHub 的新建 Release 页面
+- 你只需要在浏览器里点一次 `Publish release`
+
+如果你希望从 changeset 开始整套自动发版，也可以传参数：
+
+```bash
+pnpm ship patch "修复按钮样式问题"
 ```
 
 这条命令会自动完成以下步骤：
@@ -106,11 +120,20 @@ pnpm release:manual patch "修复按钮样式问题"
 常用参数示例：
 
 ```bash
-pnpm release:manual minor "新增表单组件"
-pnpm release:manual minor "新增表单组件" --version 0.2.0
-pnpm release:manual patch "修复发布流程" --dry-run
-pnpm release:manual --skip-changeset
+pnpm ship
+pnpm ship minor "新增表单组件"
+pnpm ship minor "新增表单组件" --version 0.2.0
+pnpm ship patch "修复发布流程" --dry-run
+pnpm ship --skip-changeset
 ```
+
+也保留了兼容别名：
+
+```bash
+pnpm tag
+```
+
+但更推荐使用 `pnpm ship`，因为这个命令做的不只是打 tag，而是完整执行一整套发布流程。
 
 - `--dry-run`：只打印将要执行的命令，不实际修改仓库或远程状态
 - `--skip-changeset`：跳过自动创建 changeset，适合你已经手动准备好 changeset 的情况

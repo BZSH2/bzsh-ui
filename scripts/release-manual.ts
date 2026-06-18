@@ -12,6 +12,7 @@ type ParsedArgs = {
   dryRun: boolean
   expectedVersion?: string
   notes?: string
+  preparedOnly: boolean
   remote: string
   skipChangeset: boolean
   summary: string
@@ -21,6 +22,8 @@ type PackageInfo = {
   name: string
   version: string
 }
+
+type ReleaseCreationMode = 'gh' | 'web'
 
 type ParsedVersion = {
   major: number
@@ -37,15 +40,18 @@ const uiPackageJsonPath = path.join(uiPackageDir, 'package.json')
  */
 function printUsage(): void {
   console.log(`Usage:
-  pnpm release:manual <patch|minor|major> "<summary>" [--dry-run] [--version <x.y.z>] [--branch <name>] [--remote <name>] [--notes "<text>"]
-  pnpm release:manual --skip-changeset [--dry-run] [--version <x.y.z>] [--branch <name>] [--remote <name>] [--notes "<text>"]
+  pnpm ship
+  pnpm ship --dry-run
+  pnpm ship <patch|minor|major> "<summary>" [--dry-run] [--version <x.y.z>] [--branch <name>] [--remote <name>] [--notes "<text>"]
+  pnpm ship --skip-changeset [--dry-run] [--version <x.y.z>] [--branch <name>] [--remote <name>] [--notes "<text>"]
 
 Examples:
-  pnpm release:manual patch "修复按钮样式问题"
-  pnpm release:manual minor "新增表单组件"
-  pnpm release:manual minor "新增表单组件" --version 0.2.0
-  pnpm release:manual --skip-changeset
-  pnpm release:manual patch "修复发布流程" --dry-run`)
+  pnpm ship
+  pnpm ship patch "修复按钮样式问题"
+  pnpm ship minor "新增表单组件"
+  pnpm ship minor "新增表单组件" --version 0.2.0
+  pnpm ship --skip-changeset
+  pnpm ship patch "修复发布流程" --dry-run`)
 }
 
 /**
@@ -54,9 +60,9 @@ Examples:
  * @returns 解析后的参数对象
  */
 function parseArgs(argv: string[]): ParsedArgs {
-  if (argv.length === 0 || argv.includes('--help') || argv.includes('-h')) {
+  if (argv.includes('--help') || argv.includes('-h')) {
     printUsage()
-    process.exit(argv.length === 0 ? 1 : 0)
+    process.exit(0)
   }
 
   let branch = 'master'
@@ -134,6 +140,7 @@ function parseArgs(argv: string[]): ParsedArgs {
   }
 
   const summary = summaryParts.join(' ').trim()
+  const preparedOnly = !bumpType && !summary && !skipChangeset
 
   if (!branch.trim()) {
     throw new Error('The branch name cannot be empty.')
@@ -143,11 +150,11 @@ function parseArgs(argv: string[]): ParsedArgs {
     throw new Error('The remote name cannot be empty.')
   }
 
-  if (!skipChangeset && !bumpType) {
+  if (!preparedOnly && !skipChangeset && !bumpType) {
     throw new Error('Missing bump type. Use patch, minor, or major.')
   }
 
-  if (!skipChangeset && !summary) {
+  if (!preparedOnly && !skipChangeset && !summary) {
     throw new Error('Missing release summary. Wrap the summary in quotes.')
   }
 
@@ -157,6 +164,7 @@ function parseArgs(argv: string[]): ParsedArgs {
     dryRun,
     expectedVersion: expectedVersion?.trim() || undefined,
     notes: notes?.trim() || undefined,
+    preparedOnly,
     remote: remote.trim(),
     skipChangeset,
     summary,
@@ -210,6 +218,20 @@ function assertCommandAvailable(bin: string): void {
     runCommand(bin, ['--version'], { captureOutput: true })
   } catch {
     throw new Error(`Required command "${bin}" is not available in PATH.`)
+  }
+}
+
+/**
+ * 检查命令是否存在
+ * @param bin 可执行文件名称
+ * @returns 如果命令可用则返回 true
+ */
+function hasCommandAvailable(bin: string): boolean {
+  try {
+    runCommand(bin, ['--version'], { captureOutput: true })
+    return true
+  } catch {
+    return false
   }
 }
 
@@ -329,6 +351,77 @@ function assertGithubReleaseNotExists(tagName: string): void {
   if (result.status === 0) {
     throw new Error(`GitHub Release "${tagName}" already exists. Avoid publishing the same release twice.`)
   }
+}
+
+/**
+ * 读取 git remote URL
+ * @param remote 远程仓库名称
+ * @returns 远程仓库地址
+ */
+function getRemoteUrl(remote: string): string {
+  return runCommand('git', ['remote', 'get-url', remote], { captureOutput: true })
+}
+
+/**
+ * 从 git remote URL 提取 GitHub 仓库路径
+ * @param remoteUrl git remote 地址
+ * @returns owner/repo 路径
+ */
+function parseGithubRepoPath(remoteUrl: string): string {
+  const normalized = remoteUrl.trim()
+  const sshMatch = normalized.match(/^git@github\.com:(.+?)(?:\.git)?$/)
+
+  if (sshMatch) {
+    return sshMatch[1]
+  }
+
+  const httpsMatch = normalized.match(/^https:\/\/github\.com\/(.+?)(?:\.git)?$/)
+
+  if (httpsMatch) {
+    return httpsMatch[1]
+  }
+
+  throw new Error(`Cannot derive GitHub repository path from remote URL "${remoteUrl}".`)
+}
+
+/**
+ * 构建 GitHub Release 创建页面链接
+ * @param remote 远程仓库名称
+ * @param tagName 目标 tag
+ * @param title Release 标题
+ * @returns 可直接打开的 Release 创建链接
+ */
+function buildGithubReleaseUrl(remote: string, tagName: string, title: string): string {
+  const remoteUrl = getRemoteUrl(remote)
+  const repoPath = parseGithubRepoPath(remoteUrl)
+  const search = new URLSearchParams({
+    tag: tagName,
+    title,
+  })
+
+  return `https://github.com/${repoPath}/releases/new?${search.toString()}`
+}
+
+/**
+ * 尝试打开浏览器访问指定链接
+ * @param url 目标链接
+ */
+function openUrl(url: string): void {
+  if (process.platform === 'win32') {
+    spawnSync('powershell', ['-NoProfile', '-Command', 'Start-Process', url], {
+      cwd: repoRoot,
+      encoding: 'utf8',
+      stdio: 'ignore',
+    })
+    return
+  }
+
+  if (process.platform === 'darwin') {
+    spawnSync('open', [url], { cwd: repoRoot, encoding: 'utf8', stdio: 'ignore' })
+    return
+  }
+
+  spawnSync('xdg-open', [url], { cwd: repoRoot, encoding: 'utf8', stdio: 'ignore' })
 }
 
 /**
@@ -471,11 +564,12 @@ function assertExpectedVersionMatches(actualVersion: string, expectedVersion?: s
 async function main(): Promise<void> {
   const options = parseArgs(process.argv.slice(2))
   assertExpectedVersionValid(options.expectedVersion)
+  const hasGhCli = hasCommandAvailable('gh')
+  const releaseCreationMode: ReleaseCreationMode = hasGhCli ? 'gh' : 'web'
 
   if (!options.dryRun) {
     assertCommandAvailable('git')
     assertCommandAvailable('pnpm')
-    assertCommandAvailable('gh')
     assertCleanWorkingTree()
     assertCurrentBranch(options.branch)
     fetchRemoteReleaseRefs(options.remote, options.branch)
@@ -483,35 +577,47 @@ async function main(): Promise<void> {
   }
 
   const releasePackage = await readReleasePackageInfo()
-  const previousVersion = releasePackage.version
+  let nextReleasePackage = releasePackage
+  let nextVersion = options.dryRun
+    ? options.expectedVersion ?? releasePackage.version
+    : releasePackage.version
 
-  if (!options.skipChangeset && options.bumpType) {
-    runCommand(
-      'pnpm',
-      ['changeset:auto', options.bumpType, options.summary, '--package', releasePackage.name],
-      { dryRun: options.dryRun }
-    )
+  if (options.preparedOnly) {
+    if (!options.dryRun) {
+      assertExpectedVersionMatches(releasePackage.version, options.expectedVersion)
+    }
+  } else {
+    const previousVersion = releasePackage.version
+
+    if (!options.skipChangeset && options.bumpType) {
+      runCommand(
+        'pnpm',
+        ['changeset:auto', options.bumpType, options.summary, '--package', releasePackage.name],
+        { dryRun: options.dryRun }
+      )
+    }
+
+    runCommand('pnpm', ['version-packages'], { dryRun: options.dryRun })
+
+    nextReleasePackage = options.dryRun
+      ? releasePackage
+      : await readReleasePackageInfo()
+
+    if (!options.dryRun && nextReleasePackage.version === previousVersion) {
+      throw new Error(
+        'No version change detected after pnpm version-packages. Ensure a valid changeset exists.'
+      )
+    }
+
+    if (!options.dryRun) {
+      assertExpectedVersionMatches(nextReleasePackage.version, options.expectedVersion)
+    }
+
+    nextVersion = options.dryRun
+      ? options.expectedVersion ?? '<new-version>'
+      : nextReleasePackage.version
   }
 
-  runCommand('pnpm', ['version-packages'], { dryRun: options.dryRun })
-
-  const nextReleasePackage = options.dryRun
-    ? releasePackage
-    : await readReleasePackageInfo()
-
-  if (!options.dryRun && nextReleasePackage.version === previousVersion) {
-    throw new Error(
-      'No version change detected after pnpm version-packages. Ensure a valid changeset exists.'
-    )
-  }
-
-  if (!options.dryRun) {
-    assertExpectedVersionMatches(nextReleasePackage.version, options.expectedVersion)
-  }
-
-  const nextVersion = options.dryRun
-    ? options.expectedVersion ?? '<new-version>'
-    : nextReleasePackage.version
   const tagName = `v${nextVersion}`
   const commitMessage = `chore: release ${tagName}`
   const releaseNotes = options.notes ?? (options.summary || `release ${tagName}`)
@@ -522,24 +628,44 @@ async function main(): Promise<void> {
     assertVersionIsNewerThanLatestTag(nextReleasePackage.version, latestReleaseTag)
     assertTagNotExists(tagName)
     assertRemoteTagNotExists(options.remote, tagName)
-    assertGithubReleaseNotExists(tagName)
+    if (releaseCreationMode === 'gh') {
+      assertGithubReleaseNotExists(tagName)
+    }
   }
 
-  runCommand('git', ['add', '.'], { dryRun: options.dryRun })
-  runCommand('git', ['commit', '-m', commitMessage], { dryRun: options.dryRun })
-  runCommand('git', ['push', options.remote, options.branch], { dryRun: options.dryRun })
+  if (!options.preparedOnly) {
+    runCommand('git', ['add', '.'], { dryRun: options.dryRun })
+    runCommand('git', ['commit', '-m', commitMessage], { dryRun: options.dryRun })
+    runCommand('git', ['push', options.remote, options.branch], { dryRun: options.dryRun })
+  }
+
   runCommand('git', ['tag', tagName], { dryRun: options.dryRun })
   runCommand('git', ['push', options.remote, tagName], { dryRun: options.dryRun })
-  runCommand(
-    'gh',
-    ['release', 'create', tagName, '--title', tagName, '--notes', releaseNotes],
-    { dryRun: options.dryRun }
-  )
+  if (releaseCreationMode === 'gh') {
+    runCommand(
+      'gh',
+      ['release', 'create', tagName, '--title', tagName, '--notes', releaseNotes],
+      { dryRun: options.dryRun }
+    )
+  } else {
+    const releaseUrl = buildGithubReleaseUrl(options.remote, tagName, tagName)
+
+    if (options.dryRun) {
+      console.log(`[dry-run] open ${releaseUrl}`)
+    } else {
+      openUrl(releaseUrl)
+      console.log(`GitHub CLI (gh) is not installed. Opened the Release page for ${tagName}:`)
+      console.log(releaseUrl)
+      console.log('Publish the Release in your browser to trigger GitHub Actions.')
+    }
+  }
 
   console.log(
     options.dryRun
       ? 'Dry run finished. No files or remote state were changed.'
-      : `Release ${tagName} has been created. GitHub Actions will publish it automatically.`
+      : releaseCreationMode === 'gh'
+        ? `Release ${tagName} has been created. GitHub Actions will publish it automatically.`
+        : `Tag ${tagName} has been pushed. Finish creating the GitHub Release in your browser to trigger publishing.`
   )
 }
 
