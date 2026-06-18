@@ -90,7 +90,6 @@ pnpm changeset             # 创建 changeset
 pnpm changesets:au          # 自动创建 changeset
 pnpm version-packages      # 更新版本
 pnpm release               # 发布
-pnpm release:verify        # 发布前验证
 ```
 
 ## 开发流程

@@ -76,7 +76,6 @@
 - `pnpm typecheck`
 - `pnpm test`
 - `pnpm check`
-- `pnpm release:verify`
 
 这一层只提供入口，不再直接维护复杂的 `pnpm --filter` 或多段 `&&` 串联。
 
@@ -96,8 +95,6 @@
   - `test:packages`
 - `check`
   - `lint -> typecheck -> test -> build`
-- `release:verify`
-  - `check -> format:check`
 
 执行器为 `tooling/scripts/run-root-task-group.ts`。
 
@@ -215,24 +212,22 @@ Lint 链路目前分成两条：
 统一入口：
 
 - `pnpm check`
-- `pnpm release:verify`
 
 语义约定：
 
-- `check` 用于全量工程校验。
-- `release:verify` 用于发布前校验，比 `check` 多一层 `format:check`。
+- `check` 用于本地全量工程校验。
 
 ### Release Workflow
 
 `.github/workflows/release.yml` 当前遵循以下顺序：
 
 1. 安装依赖。
-2. 执行 `pnpm release:verify`。
+2. 执行 `pnpm build`。
 3. 自动补 changeset。
 4. 执行 `pnpm version-packages`。
 5. 执行 `pnpm release`。
 
-这样 workflow 只负责平台步骤和发布凭证，校验逻辑统一下沉到仓库任务层。
+这样 workflow 只负责最小发布链路和发布凭证，更多质量校验放在本地提交阶段完成。
 
 ### Docs Workflow
 

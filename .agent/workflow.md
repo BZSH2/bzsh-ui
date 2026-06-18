@@ -111,13 +111,22 @@
 
 1. 在功能分支完成开发
 2. 创建 PR 到 `main`
-3. CI 运行 `pnpm release:verify` 验证
+3. CI 运行 `pnpm build` 验证
 4. 合并后自动发布
 
 ## CI/CD
 
 - `.github/workflows/release.yml`: 发布流程
 - `.github/workflows/deploy-docs.yml`: 文档部署
+
+### Release Workflow
+
+- 发布阶段不再重复执行 `pnpm lint`
+- 发布阶段不再执行 `pnpm typecheck`
+- 发布阶段不再执行 `pnpm test`
+- 发布阶段不再执行 `pnpm format:check`
+- `lint` 放在开发者本地提交阶段通过 `lint-staged` 执行
+- Release Action 只保留 `build`
 
 ## Lint 流程
 

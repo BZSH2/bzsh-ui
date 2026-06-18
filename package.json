@@ -26,8 +26,6 @@
     "lint:fix": "esno ./tooling/scripts/run-root-task-group.ts lint:fix",
     "check": "esno ./tooling/scripts/run-root-task-group.ts check",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "release:verify": "esno ./tooling/scripts/run-root-task-group.ts release:verify",
     "typecheck": "esno ./tooling/scripts/run-root-task-group.ts typecheck",
     "typecheck:packages": "esno ./tooling/scripts/run-workspace-task.ts packages:typecheck",
     "typecheck:root": "vue-tsc -p tsconfig.json --noEmit",

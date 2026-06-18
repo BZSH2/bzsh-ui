@@ -28,10 +28,6 @@ export const rootTaskGroups: Record<string, string[]> = {
    */
   'lint:root': ['lint:eslint', 'lint:stylelint'],
   /**
-   * 发布前验证任务
-   */
-  'release:verify': ['check', 'format:check'],
-  /**
    * 测试任务
    */
   'test': ['test:packages'],
