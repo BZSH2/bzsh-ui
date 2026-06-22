@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@bzsh-ui/components": "workspace:*",
+    "@bzsh-ui/modules": "workspace:*",
     "@bzsh-ui/theme-chalk": "workspace:*",
     "@bzsh-ui/utils": "workspace:*"
   },

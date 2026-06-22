@@ -14,6 +14,7 @@ export default defineConfig({
         resolve(__dirname, 'defaults.ts'),
         resolve(__dirname, 'make-installer.ts'),
         resolve(__dirname, '../components'),
+        resolve(__dirname, '../modules'),
         resolve(__dirname, '../utils'),
       ],
       exclude: [resolve(__dirname, 'vite.config.ts')],

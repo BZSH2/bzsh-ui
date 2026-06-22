@@ -1,6 +1,7 @@
 import './style.scss'
 
 export * from '@bzsh-ui/components'
+export * from '@bzsh-ui/modules'
 export * from '@bzsh-ui/utils'
 
 import { defaultComponents } from './defaults'

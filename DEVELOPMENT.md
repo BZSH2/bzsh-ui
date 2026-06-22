@@ -79,6 +79,7 @@ pnpm check        # 完整检查（lint + typecheck + test + build）
 
 ```bash
 pnpm component <name>      # 创建新组件
+pnpm module <name>         # 创建组合模块
 pnpm deleteC <name>        # 删除组件
 pnpm utils <name>          # 创建工具函数
 pnpm sync:components       # 同步组件注册表
@@ -258,6 +259,33 @@ pnpm release
    pnpm cz
    ```
 
+### 新增组合模块
+
+1. **创建模块**
+
+   ```bash
+   pnpm module form
+   ```
+
+2. **编辑模块入口**
+
+   ```bash
+   packages/modules/form/index.ts
+   ```
+
+3. **同步聚合导出**
+
+   ```bash
+   pnpm sync:components
+   ```
+
+4. **验证**
+
+   ```bash
+   pnpm typecheck
+   pnpm lint
+   ```
+
 ### 新增工具函数
 
 ```bash
@@ -321,7 +349,7 @@ pnpm test:packages        # 仅运行包的测试
 
 **新增文件后无需手动修改 lint 配置**，会自动被检查。
 
-详见 [.agent/lint-config.md](./.agent/lint-config.md)
+详见 [.agent/core/lint-config.md](./.agent/core/lint-config.md)
 
 ## 提交规范
 
@@ -347,7 +375,7 @@ Type 类型：
 
 ### Q: 新增的文件没有被 lint 检查？
 
-A: 检查 `package.json` 中的 lint 脚本是否使用了 glob 模式。详见 [lint-config.md](./.agent/lint-config.md)
+A: 检查 `package.json` 中的 lint 脚本是否使用了 glob 模式。详见 [lint-config.md](./.agent/core/lint-config.md)
 
 ### Q: 提交时 lint 失败？
 
@@ -363,7 +391,7 @@ A: 运行 `pnpm sync:components` 同步组件注册表。
 
 ### Q: 如何添加新的 Agent 规则？
 
-A: 在 `.agent/` 目录创建新的规则文件，并在 `.agent/README.md` 中添加条目。详见 [.agent/documentation.md](./.agent/documentation.md)
+A: 在 `.agent/` 目录创建新的规则文件，并在 `.agent/README.md` 中添加条目。详见 [.agent/core/documentation.md](./.agent/core/documentation.md)
 
 ## 相关资源
 

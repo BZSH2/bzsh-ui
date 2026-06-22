@@ -32,6 +32,7 @@
     "changeset": "changeset",
     "changeset:auto": "esno ./scripts/create-changeset.ts",
     "component": "esno ./scripts/create-component.ts",
+    "module": "esno ./scripts/create-module.ts",
     "deleteC": "esno ./scripts/delete-component.ts",
     "utils": "esno ./scripts/create-utils.ts",
     "version-packages": "changeset version",

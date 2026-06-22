@@ -33,6 +33,10 @@ export const playDir = path.join(repoRoot, 'play')
  */
 export const componentsDir = path.join(packagesDir, 'components')
 /**
+ * 组合模块包目录路径
+ */
+export const modulesDir = path.join(packagesDir, 'modules')
+/**
  * UI 核心包目录路径
  */
 export const uiPackageDir = path.join(packagesDir, 'ui')
@@ -49,6 +53,10 @@ export const scriptsDir = path.join(toolingDir, 'scripts')
  * 组件入口文件路径
  */
 export const componentEntriesPath = path.join(componentsDir, 'index.ts')
+/**
+ * 组合模块入口文件路径
+ */
+export const moduleEntriesPath = path.join(modulesDir, 'index.ts')
 /**
  * 默认组件配置文件路径
  */
@@ -68,6 +76,7 @@ export const themeBasePath = path.join(themeChalkSrcDir, 'base.scss')
 export const packageAliases: Record<string, string> = {
   '@': packagesDir,
   '@bzsh-ui/components': path.join(componentsDir, 'index.ts'),
+  '@bzsh-ui/modules': path.join(modulesDir, 'index.ts'),
   '@bzsh-ui/core': path.join(uiPackageDir, 'index.ts'),
   '@bzsh-ui/internal': path.join(packagesDir, 'internal', 'index.ts'),
   '@bzsh-ui/utils': path.join(packagesDir, 'utils', 'index.ts'),

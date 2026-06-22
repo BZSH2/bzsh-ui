@@ -5,6 +5,8 @@ import {
   componentEntriesPath,
   componentsDir,
   defaultComponentsPath,
+  moduleEntriesPath,
+  modulesDir,
   themeIndexPath,
 } from '../config/project-paths'
 
@@ -85,6 +87,30 @@ async function listComponentNames(): Promise<string[]> {
 }
 
 /**
+ * 列出所有组合模块名称
+ * 模块目录必须包含 index.ts 才会被视为公开模块
+ * @returns 按字母顺序排序的模块名称数组
+ */
+async function listModuleNames(): Promise<string[]> {
+  const entries = await readdir(modulesDir, { withFileTypes: true })
+  const moduleNames: string[] = []
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) {
+      continue
+    }
+
+    const indexPath = path.join(modulesDir, entry.name, 'index.ts')
+
+    if (await pathExists(indexPath)) {
+      moduleNames.push(entry.name)
+    }
+  }
+
+  return moduleNames.sort((left, right) => left.localeCompare(right))
+}
+
+/**
  * 构建组件导出文件内容
  * @param componentNames 组件名称数组
  * @returns 组件导出文件的内容
@@ -96,25 +122,40 @@ function buildComponentExports(componentNames: string[]): string {
 }
 
 /**
+ * 构建模块导出文件内容
+ * @param moduleNames 模块名称数组
+ * @returns 模块导出文件内容
+ */
+function buildModuleExports(moduleNames: string[]): string {
+  const exports = moduleNames.map((moduleName) => `export * from './${moduleName}'`)
+
+  return `${generatedBanner}\n${exports.join('\n')}\n`
+}
+
+/**
  * 构建默认组件列表文件内容
  * @param componentNames 组件名称数组
  * @returns 默认组件列表文件的内容
  */
-function buildDefaultComponents(componentNames: string[]): string {
-  const imports = componentNames
-    .map((componentName) => {
-      const exportName = toExportName(componentName)
-      return exportName
-    })
-    .join(', ')
+function buildDefaultComponents(componentNames: string[], moduleNames: string[]): string {
+  const componentImports = componentNames.map((componentName) => toExportName(componentName))
+  const moduleImports = moduleNames.map((moduleName) => toExportName(moduleName))
+  const installables = [...componentImports, ...moduleImports]
+  const importLines: string[] = []
 
-  const componentList = componentNames
-    .map((componentName) => toExportName(componentName))
-    .join(', ')
-  const arrayValue = componentList ? `[${componentList}]` : '[]'
+  if (componentImports.length > 0) {
+    importLines.push(`import { ${componentImports.join(', ')} } from '@bzsh-ui/components'`)
+  }
+
+  if (moduleImports.length > 0) {
+    importLines.push(`import { ${moduleImports.join(', ')} } from '@bzsh-ui/modules'`)
+  }
+
+  const arrayValue = installables.length > 0 ? `[${installables.join(', ')}]` : '[]'
+  const importsBlock = importLines.length > 0 ? `${importLines.join('\n')}\n\n` : ''
 
   return `${generatedBanner}
-${imports ? `import { ${imports} } from '@bzsh-ui/components'\n\n` : ''}import type { Plugin } from 'vue'
+${importsBlock}import type { Plugin } from 'vue'
 
 export const defaultComponents: Plugin[] = ${arrayValue}
 `
@@ -154,18 +195,22 @@ export async function syncComponentRegistry({
 } = {}): Promise<void> {
   // 目录树是真相的来源；所有聚合文件都从它派生而来
   const componentNames = await listComponentNames()
+  const moduleNames = await listModuleNames()
   const nextComponentExports = buildComponentExports(componentNames)
-  const nextDefaultComponents = buildDefaultComponents(componentNames)
+  const nextModuleExports = buildModuleExports(moduleNames)
+  const nextDefaultComponents = buildDefaultComponents(componentNames, moduleNames)
   const nextThemeIndex = buildThemeIndex(componentNames)
 
   if (dryRun) {
     console.log(`Update: ${path.relative(process.cwd(), componentEntriesPath)}`)
+    console.log(`Update: ${path.relative(process.cwd(), moduleEntriesPath)}`)
     console.log(`Update: ${path.relative(process.cwd(), defaultComponentsPath)}`)
     console.log(`Update: ${path.relative(process.cwd(), themeIndexPath)}`)
     return
   }
 
   await writeFile(componentEntriesPath, nextComponentExports, 'utf8')
+  await writeFile(moduleEntriesPath, nextModuleExports, 'utf8')
   await writeFile(defaultComponentsPath, nextDefaultComponents, 'utf8')
   await writeFile(themeIndexPath, nextThemeIndex, 'utf8')
 }

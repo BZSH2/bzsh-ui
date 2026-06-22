@@ -28,9 +28,14 @@
 ### `packages`
 
 - `packages/components`
-  - 组件源码聚合层。
-  - 负责导出所有组件入口。
+  - 单个组件源码层。
+  - 每个目录对应一个可独立安装的基础组件。
+  - 聚合导出文件为 `packages/components/index.ts`。
   - 当前已具备独立 `lint/typecheck/test` 能力。
+- `packages/modules`
+  - 组合模块层。
+  - 用于承载由多个基础组件组合而成的模块能力。
+  - 聚合导出文件为 `packages/modules/index.ts`。
 - `packages/internal`
   - 内部安装器和非公开运行时工具。
   - 例如 `with-install` 这类不直接面向使用者的能力。
