@@ -1,5 +1,11 @@
 # bzsh-ui
 
+## 0.1.13
+
+### Patch Changes
+
+- feat: ✨ 完善scroll组件
+
 ## 0.1.12
 
 ### Patch Changes
