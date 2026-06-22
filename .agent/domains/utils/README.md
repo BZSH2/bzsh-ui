@@ -12,11 +12,11 @@
 ## 当前规则
 
 - [structure.md](./structure.md): 工具源码、文档与导入示例的目录对齐规则
+- [creation.md](./creation.md): 新增工具函数与分类目录时的落地检查点
 
 ## 后续扩展
 
 后续可以新增：
 
-- `creation.md`: 工具函数创建规则
 - `typing.md`: 工具类型约束
 - `testing.md`: 工具函数测试要求

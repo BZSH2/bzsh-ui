@@ -7,7 +7,7 @@
 ## 目录拉齐约定
 
 - 当 `packages/utils/` 下已经存在清晰的语义子目录时，`docs/utils/` 应尽量沿用同名子目录。
-- 例如源码使用 `packages/utils/type-utils/`、`packages/utils/type-guards/` 时，文档也应优先使用 `docs/utils/type-utils/`、`docs/utils/type-guards/`。
+- 例如源码使用 `packages/utils/type-utils/`、`packages/utils/type-guards/`、`packages/utils/function-utils/` 时，文档也应优先使用 `docs/utils/type-utils/`、`docs/utils/type-guards/`、`docs/utils/function-utils/`。
 - 单个方法保持一个文件时，文档也优先保持一个方法一个页面。
 - 如果某类工具已经有目录入口页，优先使用 `index.md` 作为该目录的聚合说明页。
 
@@ -20,5 +20,6 @@
 ## 修改时的检查点
 
 - 新增工具函数后，确认源码目录、文档目录、侧边栏分组是否同步。
+- 如果新增的是函数控制类工具，优先归入 `function-utils/` 一类目录，并同步更新聚合导出与目录入口页。
 - 如果目录层级发生变化，同时更新 VitePress 导航生成逻辑或侧边栏配置。
 - 如果新增的是公开导出 API，文档示例应优先验证根包导入方式是否成立。

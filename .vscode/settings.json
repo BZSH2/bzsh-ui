@@ -20,7 +20,7 @@
   ],
   "stylelint.validate": ["css", "less", "postcss", "scss", "vue", "sass"],
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
+    "source.fixAll.eslint": "always",
     "source.fixAll.oxc": "explicit",
     "source.fixAll.stylelint": "always",
     "source.organizeImports": "never"

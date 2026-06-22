@@ -10,5 +10,9 @@
     "docs:dev": "pnpm run dev",
     "docs:build": "pnpm run build",
     "docs:preview": "pnpm run preview"
+  },
+  "devDependencies": {
+    "element-plus": "^2.14.2",
+    "vue": "^3.5.17"
   }
 }

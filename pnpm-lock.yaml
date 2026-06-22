@@ -37,6 +37,12 @@ importers:
       '@vue/test-utils':
         specifier: ^2.4.6
         version: 2.4.11(@vue/compiler-dom@3.5.38)(@vue/server-renderer@3.5.38(vue@3.5.38(typescript@5.9.3)))(vue@3.5.38(typescript@5.9.3))
+      element-plus:
+        specifier: ^2.14.2
+        version: 2.14.2(vue@3.5.38(typescript@5.9.3))
+      eslint:
+        specifier: 9.39.4
+        version: 9.39.4(jiti@2.6.1)
       eslint-config-prettier:
         specifier: ^10.1.5
         version: 10.1.8(eslint@9.39.4(jiti@2.6.1))
@@ -88,6 +94,9 @@ importers:
       stylelint-config-recess-order:
         specifier: ^7.2.0
         version: 7.7.0(stylelint-order@8.1.1(stylelint@16.26.1(typescript@5.9.3)))(stylelint@16.26.1(typescript@5.9.3))
+      stylelint-config-standard:
+        specifier: 38.0.0
+        version: 38.0.0(stylelint@16.26.1(typescript@5.9.3))
       stylelint-config-standard-scss:
         specifier: ^15.0.1
         version: 15.0.1(postcss@8.5.15)(stylelint@16.26.1(typescript@5.9.3))

@@ -104,6 +104,13 @@ export default [
     rules: {
       'no-undef': 'off',
       'vue/multi-word-component-names': 'off',
+      'vue/component-name-in-template-casing': [
+        'error',
+        'PascalCase',
+        {
+          registeredComponentsOnly: false,
+        },
+      ],
       'vue/require-default-prop': 'off',
       ...sharedImportRules,
     },
