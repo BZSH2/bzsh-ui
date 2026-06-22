@@ -292,7 +292,14 @@ pnpm release
 pnpm utils isNumber
 ```
 
-创建后在 `packages/utils/` 下编辑实现。
+创建后按语义分类放置源码：
+
+- `getDataType` 这类底层类型工具放在 `packages/utils/type-utils/`
+- `isXxx` 这类类型判断函数放在 `packages/utils/type-guards/`，并保持一个方法一个文件
+- 其他通用工具函数可以继续放在 `packages/utils/` 或后续新增更明确的子目录
+- 文档目录优先与源码目录拉齐，例如 `docs/utils/type-utils/` 对应 `packages/utils/type-utils/`
+- 面向外部使用者的文档示例，优先使用 `import { xxx } from 'bzsh-ui'`
+- `@bzsh-ui/utils` 这类路径仅用于 monorepo 内部开发、联调或单包说明
 
 ### 修改配置
 

@@ -8,6 +8,7 @@
 
 - `docs/`: VitePress 文档站点
 - `play/`: 本地调试 playground
+- 当某个源码域已经拆出清晰子目录时，文档目录优先保持相近层级，尽量做到结构拉齐
 
 ### `packages/`
 

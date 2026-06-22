@@ -129,7 +129,7 @@ function buildComponentExports(componentNames: string[]): string {
 function buildModuleExports(moduleNames: string[]): string {
   const exports = moduleNames.map((moduleName) => `export * from './${moduleName}'`)
 
-  return `${generatedBanner}\n${exports.join('\n')}\n`
+  return `${generatedBanner}\n${exports.length > 0 ? `${exports.join('\n')}\n` : 'export {}\n'}`
 }
 
 /**

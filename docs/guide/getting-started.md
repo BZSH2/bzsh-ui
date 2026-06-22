@@ -16,7 +16,7 @@ pnpm install
 ## 导入示例
 
 ```ts
-import { BzButton, isNumber } from 'bzsh-ui'
+import { BzButton, getDataType, is } from 'bzsh-ui'
 ```
 
 ## 本地开发

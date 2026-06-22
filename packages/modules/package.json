@@ -14,7 +14,7 @@
     "@bzsh-ui/internal": "workspace:*"
   },
   "scripts": {
-    "lint": "eslint \"**/*.ts\" \"**/*.vue\"",
+    "lint": "eslint --no-error-on-unmatched-pattern \"**/*.ts\" \"**/*.vue\"",
     "typecheck": "vue-tsc -p ../../tsconfig.json --noEmit",
     "test": "vitest run --root ../.."
   }

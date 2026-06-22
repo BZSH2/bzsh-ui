@@ -17,11 +17,12 @@
 
 ### 领域规则
 
-| 目录                                                         | 职责                 |
-| ------------------------------------------------------------ | -------------------- |
-| [domains/README.md](./domains/README.md)                     | 领域规则索引         |
-| [domains/component/README.md](./domains/component/README.md) | 组件相关规则入口     |
-| [domains/utils/README.md](./domains/utils/README.md)         | 工具函数相关规则入口 |
+| 目录                                                         | 职责                   |
+| ------------------------------------------------------------ | ---------------------- |
+| [domains/README.md](./domains/README.md)                     | 领域规则索引           |
+| [domains/component/README.md](./domains/component/README.md) | 组件相关规则入口       |
+| [domains/utils/README.md](./domains/utils/README.md)         | 工具函数相关规则入口   |
+| [domains/utils/structure.md](./domains/utils/structure.md)   | 工具目录与文档对齐规则 |
 
 ## 使用方式
 
