@@ -6,6 +6,7 @@
 
 ## 当前内容
 
+- `func`
 - [debounce](./debounce)
 - [throttle](./throttle)
 
@@ -30,7 +31,13 @@ func.throttle(() => {}, 200)
 
 - 需要在一段时间内只执行最后一次调用时，使用 `debounce()`。
 - 需要固定时间间隔内最多执行一次时，使用 `throttle()`。
-- 需要统一从聚合对象读取时，可以使用 `func.debounce` 和 `func.throttle`。
+- 需要统一从聚合对象读取时，使用 `func.debounce` 和 `func.throttle`。
+
+## 导出关系
+
+- `debounce`、`throttle` 是独立具名导出，适合按需导入。
+- `func` 是聚合对象，内部收口为 `func.debounce` 和 `func.throttle`。
+- 两种写法底层实现一致，只是导入和调用风格不同。
 
 ## 适用场景
 

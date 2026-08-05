@@ -73,6 +73,7 @@ export default [
     },
     rules: {
       'no-undef': 'off',
+      'no-unused-vars': 'off',
       ...sharedImportRules,
     },
     settings: {
@@ -103,6 +104,7 @@ export default [
     },
     rules: {
       'no-undef': 'off',
+      'no-unused-vars': 'off',
       'vue/multi-word-component-names': 'off',
       'vue/component-name-in-template-casing': [
         'error',
@@ -112,6 +114,12 @@ export default [
         },
       ],
       'vue/require-default-prop': 'off',
+      'vue/block-order': [
+        'error',
+        {
+          order: ['script', 'template', 'style'],
+        },
+      ],
       ...sharedImportRules,
     },
     settings: {

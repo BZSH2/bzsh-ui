@@ -30,6 +30,16 @@ requestSuggestions('vue')
 
 300ms 内连续触发时，只有最后一次参数会真正执行。
 
+也可以通过聚合对象调用：
+
+```ts
+import { func } from 'bzsh-ui'
+
+const requestSuggestions = func.debounce((keyword: string) => {
+  console.log('search:', keyword)
+}, 300)
+```
+
 ## 立即执行模式
 
 ```ts

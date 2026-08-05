@@ -1,20 +1,3 @@
-<template>
-  <ElButton
-    class="bz-button"
-    :type="buttonType"
-    :size="buttonSize"
-    :disabled="disabled"
-    :plain="plain"
-    :round="round"
-    :circle="circle"
-    @click="handleClick"
-  >
-    <span class="bz-button__content">
-      <slot>{{ label }}</slot>
-    </span>
-  </ElButton>
-</template>
-
 <script setup lang="ts">
 import { ElButton } from 'element-plus'
 import { computed } from 'vue'
@@ -64,3 +47,20 @@ const handleClick = (event: MouseEvent) => {
   emit('click', event)
 }
 </script>
+
+<template>
+  <ElButton
+    class="bz-button"
+    :type="buttonType"
+    :size="buttonSize"
+    :disabled="disabled"
+    :plain="plain"
+    :round="round"
+    :circle="circle"
+    @click="handleClick"
+  >
+    <span class="bz-button__content">
+      <slot>{{ label }}</slot>
+    </span>
+  </ElButton>
+</template>

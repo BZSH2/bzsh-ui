@@ -2,17 +2,15 @@
 
 `utils` 目录承载与组件无强耦合的公共工具函数，主要服务于运行时判断、数据处理和跨包复用场景。
 
-## 推荐理解方式
+## 当前结构
 
-可以把当前这组工具分成三类：
+当前工具按源码目录分成三层：
 
-- `type-utils`：负责统一返回运行时类型名称，例如 `getDataType()`。
-- `type-guards`：负责把类型判断封装成更直观的布尔守卫，例如 `is.xxx` 和 `isXxx`。
-- `function-utils`：负责处理函数调用频率控制，例如 `debounce()` 和 `throttle()`。
+- `type-utils`：底层类型工具，当前提供 `getDataType()`。
+- `type-guards`：类型判断工具，既提供 `is.xxx` 聚合入口，也提供 `isXxx` 独立方法。
+- `function-utils`：函数调用频率控制工具，既提供 `debounce()`、`throttle()`，也提供 `func.xxx` 聚合入口。
 
-如果只是想知道一个值到底是什么类型，用 `getDataType()` 更直接；如果只是想做条件判断，优先使用 `is.xxx` 或 `isXxx`；如果想控制高频事件触发，优先使用 `debounce()` 或 `throttle()`。
-
-现在文档目录也与源码目录保持一致：
+文档目录与源码目录一一对应：
 
 - `packages/utils/type-utils/` 对应 `docs/utils/type-utils/`
 - `packages/utils/type-guards/` 对应 `docs/utils/type-guards/`
@@ -30,6 +28,7 @@
 ### 类型判断
 
 - [type-guards](./type-guards/)
+- `is.xxx`
 - [isArray](./type-guards/is-array)
 - [isArrayBuffer](./type-guards/is-arraybuffer)
 - [isBigInt](./type-guards/is-big-int)
@@ -54,25 +53,20 @@
 ### 函数控制
 
 - [function-utils](./function-utils/)
+- `func.xxx`
 - [debounce](./function-utils/debounce)
 - [throttle](./function-utils/throttle)
-
-其中：
-
-- `getDataType` 放在 `packages/utils/type-utils/`
-- 所有 `isXxx` 独立函数放在 `packages/utils/type-guards/`，保持一个方法一个文件
-- `is` 对象负责把这些独立函数再聚合成统一入口
 
 ## 使用方式
 
 ```ts
-import { debounce, getDataType, is, isNumber, isString, throttle } from 'bzsh-ui'
+import { debounce, func, getDataType, is, isNumber, throttle } from 'bzsh-ui'
 ```
 
 ## 快速示例
 
 ```ts
-import { debounce, getDataType, is, isString, throttle } from 'bzsh-ui'
+import { debounce, func, getDataType, is, isString, throttle } from 'bzsh-ui'
 
 const value: unknown = 'hello'
 const onSearch = debounce((keyword: string) => {
@@ -85,13 +79,12 @@ const onScroll = throttle(() => {
 getDataType(value) // 'string'
 is.string(value) // true
 isString(value) // true
+func.throttle(() => console.log('from func'), 200)
 onSearch('demo')
 onScroll()
 ```
 
-面向组件库使用者时，文档默认展示 `bzsh-ui` 导入方式。
-
-如果你当前是在本仓库内部维护 `packages/utils`，才考虑使用 `@bzsh-ui/utils` 这类工作区路径；它不是对外发布时的默认导入入口。
+文档默认展示对外使用方式，也就是从 `bzsh-ui` 导入；只有在 monorepo 内部维护源码时，才考虑 `@bzsh-ui/utils` 这类工作区路径。
 
 ## 开发约定
 
@@ -108,14 +101,8 @@ onScroll()
 - 需要拿到明确的类型名称：使用 `getDataType()`。
 - 需要统一链式风格：使用 `is.xxx`。
 - 需要按需导入单个方法：使用 `isNumber`、`isString` 这类独立函数。
+- 需要统一从函数工具对象读取：使用 `func.debounce`、`func.throttle`。
 - 需要降低输入、滚动、resize 一类高频触发：使用 `debounce()` 或 `throttle()`。
-
-## 单项文档
-
-- 基础类型：[isString](./type-guards/is-string)、[isNumber](./type-guards/is-number)、[isBoolean](./type-guards/is-boolean)、[isBigInt](./type-guards/is-big-int)、[isSymbol](./type-guards/is-symbol)、[isUndefined](./type-guards/is-undefined)、[isNull](./type-guards/is-null)
-- 集合类型：[isArray](./type-guards/is-array)、[isSet](./type-guards/is-set)、[isMap](./type-guards/is-map)、[isWeakSet](./type-guards/is-weak-set)、[isWeakMap](./type-guards/is-weak-map)、[isArrayBuffer](./type-guards/is-arraybuffer)
-- 对象类型：[isObject](./type-guards/is-object)、[isPlainObject](./type-guards/is-plain-object)、[isDate](./type-guards/is-date)、[isRegExp](./type-guards/is-reg-exp)、[isError](./type-guards/is-error)、[isPromise](./type-guards/is-promise)、[isFunction](./type-guards/is-function)
-- 函数控制：[debounce](./function-utils/debounce)、[throttle](./function-utils/throttle)
 
 ## 继续阅读
 

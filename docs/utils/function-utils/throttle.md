@@ -26,6 +26,16 @@ const onScroll = throttle(() => {
 
 持续滚动时，`onScroll` 会在每个节流周期内最多执行一次。
 
+也可以通过聚合对象调用：
+
+```ts
+import { func } from 'bzsh-ui'
+
+const onScroll = func.throttle(() => {
+  console.log('scroll once')
+}, 200)
+```
+
 ## 选项说明
 
 ```ts

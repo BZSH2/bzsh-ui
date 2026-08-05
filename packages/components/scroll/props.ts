@@ -1,23 +1,14 @@
+import type { ScrollbarProps as ElScrollbarProps } from 'element-plus'
+
 /**
  * Scroll 滚动组件的属性定义
+ * @description 继承自 Element Plus Scrollbar 所有属性
  */
-export interface ScrollProps {
+export interface ScrollProps extends ElScrollbarProps {
   /**
-   * 滚动组件高度
-   */
-  height?: string
-  /**
-   * 滚动组件类名
+   * 自定义滚动名
    */
   class?: string
-  /**
-   * 滚动组件标签文本
-   */
-  label?: string
-  /**
-   * 滚动组件距离底部触发事件的距离
-   */
-  distance?: number
 }
 
-export type ScrollDirection = 'top' | 'bottom' | 'left' | 'right'
+export type { ScrollbarDirection } from 'element-plus'

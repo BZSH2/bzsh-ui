@@ -108,6 +108,23 @@ const sectionItemsMap = Object.fromEntries(
 export default defineConfig({
   title: 'bzsh-ui',
   description: 'Vue 3 component library scaffold',
+  vite: {
+    resolve: {
+      alias: {
+        '@bzsh-ui/components': fileURLToPath(
+          new URL('../../packages/components/index.ts', import.meta.url)
+        ),
+        '@bzsh-ui/modules': fileURLToPath(
+          new URL('../../packages/modules/index.ts', import.meta.url)
+        ),
+        '@bzsh-ui/utils': fileURLToPath(new URL('../../packages/utils/index.ts', import.meta.url)),
+        '@bzsh-ui/internal': fileURLToPath(
+          new URL('../../packages/internal/index.ts', import.meta.url)
+        ),
+        '@bzsh-ui/core': fileURLToPath(new URL('../../packages/ui/index.ts', import.meta.url)),
+      },
+    },
+  },
   themeConfig: {
     nav: [
       { text: '指南', link: '/guide/getting-started' },

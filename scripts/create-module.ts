@@ -98,13 +98,6 @@ export default ${meta.componentName}
 `
 }
 
-function buildReadmeTemplate(meta: ModuleMeta): string {
-  return `# ${meta.pascalName}
-
-组合模块说明文档占位文件。
-`
-}
-
 async function main(): Promise<void> {
   const { rawName, dryRun } = parseArgs(process.argv.slice(2))
   const meta = resolveModuleMeta(rawName)
@@ -118,10 +111,6 @@ async function main(): Promise<void> {
     {
       path: path.join(moduleRoot, 'index.ts'),
       content: buildIndexTemplate(meta),
-    },
-    {
-      path: path.join(moduleRoot, 'README.md'),
-      content: buildReadmeTemplate(meta),
     },
   ]
 
@@ -143,7 +132,6 @@ async function main(): Promise<void> {
 
   console.log(`Created module scaffold: ${meta.componentName}`)
   console.log(`- packages/modules/${meta.kebabName}/index.ts`)
-  console.log(`- packages/modules/${meta.kebabName}/README.md`)
   console.log('Updated: packages/modules/index.ts')
   console.log('Updated: packages/ui/defaults.ts')
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElScrollbar } from 'element-plus'
 
-import type { ScrollDirection, ScrollProps } from '../props'
+import type { ScrollProps, ScrollbarDirection } from '../props'
 
 /**
  * 滚动组件 Props，包含默认值
@@ -16,6 +16,7 @@ const props = withDefaults(defineProps<ScrollProps>(), {
 
 /**
  * 滚动组件事件
+ * @description 除了自定义事件，也透传 Element Plus Scrollbar 的所有事件
  */
 const emit = defineEmits<{
   /** 滚动到底部时触发 */
@@ -26,7 +27,7 @@ const emit = defineEmits<{
  * 处理滚动到达边界事件
  * @param direction - 滚动到达的边界方向
  */
-function handleEndReached(direction: ScrollDirection) {
+function handleEndReached(direction: ScrollbarDirection) {
   switch (direction) {
     case 'bottom':
       handleScrollEndBottom()
@@ -44,12 +45,22 @@ function handleScrollEndBottom() {
 }
 </script>
 
+<script lang="ts">
+/**
+ * Vue 组件选项
+ * @description 设置 inheritAttrs: false，避免属性被自动应用到根元素
+ */
+export default {
+  inheritAttrs: false,
+}
+</script>
+
 <template>
   <ElScrollbar
+    v-bind="$attrs"
     :height="props.height"
-    :class="props.class"
+    :class="[props.class, 'bz-scroll']"
     :distance="props.distance"
-    class="bz-scroll"
     @end-reached="handleEndReached"
   >
     <slot />

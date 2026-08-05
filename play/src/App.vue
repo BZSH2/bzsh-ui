@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import { BzScroll } from '@bzsh-ui/components'
+import { BzText } from '@bzsh-ui/components'
+import { ref } from 'vue'
+
+const text = ref(
+  '这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本这是一个测试文本'
+)
 </script>
 
 <template>
-  <BzScroll :distance="100">
-    <div v-for="item in 100" :key="item">Bz - {{ item }}</div>
-  </BzScroll>
+  <div>
+    <div>111111111111</div>
+    <div class="w-100px">
+      <BzText v-model="text" class="w-100px bg-red" :tool-tip-line="2" />
+    </div>
+  </div>
 </template>

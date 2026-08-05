@@ -4,10 +4,20 @@
 
 其中既包含统一入口 `is`，也包含 `isDate`、`isString` 这类一个方法一个文件的具名导出。
 
+## 当前内容
+
+- `is`
+- `isArray`、`isArrayBuffer`、`isBigInt`、`isBoolean`
+- `isDate`、`isError`、`isFunction`
+- `isMap`、`isNull`、`isNumber`
+- `isObject`、`isPlainObject`、`isPromise`、`isRegExp`
+- `isSet`、`isString`、`isSymbol`
+- `isUndefined`、`isWeakMap`、`isWeakSet`
+
 ## 使用方式
 
 ```ts
-import { is } from 'bzsh-ui'
+import { is, isArray, isString } from 'bzsh-ui'
 
 is.string('demo') // true
 is.number(1) // true
@@ -15,6 +25,9 @@ is.array([]) // true
 is.arrayBuffer(new ArrayBuffer(8)) // true
 is.null(null) // true
 is.plainObject({}) // true
+
+isString('demo') // true
+isArray([]) // true
 ```
 
 ## 为什么有 is 和 isXxx 两种形式
@@ -83,8 +96,8 @@ import { isArray, isNumber, isString } from 'bzsh-ui'
 
 - 需要统一风格时，优先使用 `is.xxx`。
 - 需要单独按需导入时，使用 `isArray`、`isString` 这类具名导出。
+- 文档默认展示对外导入方式，也就是直接从 `bzsh-ui` 导入。
 - 只有在 monorepo 内部按包开发时，才考虑使用 `@bzsh-ui/utils` 这类工作区路径。
-- 对外使用时，不使用 `@bzsh-ui`，而是直接从 `bzsh-ui` 导入。
 
 ## 单项页面
 

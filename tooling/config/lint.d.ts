@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 export declare const workspaceIgnores: string[]
 export declare const eslintJavaScriptFiles: string[]
 export declare const eslintTypeScriptFiles: string[]

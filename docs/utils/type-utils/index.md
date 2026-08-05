@@ -8,6 +8,12 @@
 
 - [getDataType](./get-data-type)
 
+## 使用方式
+
+```ts
+import { getDataType } from 'bzsh-ui'
+```
+
 ## 推荐方式
 
 - 需要拿到明确的类型名称时，使用 `getDataType()`。
@@ -16,8 +22,6 @@
 ## 示例
 
 ```ts
-import { getDataType } from 'bzsh-ui'
-
 getDataType('demo') // 'string'
 getDataType([]) // 'array'
 getDataType(new Date()) // 'date'
