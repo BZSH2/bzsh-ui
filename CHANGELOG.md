@@ -1,5 +1,11 @@
 # bzsh-ui
 
+## 0.1.14
+
+### Patch Changes
+
+- feat: ✨ 集成unocss
+
 ## 0.1.13
 
 ### Patch Changes
