@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { basename, posix } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import UnoCSS from 'unocss/vite'
 import { defineConfig } from 'vitepress'
 
 import type { DefaultTheme } from 'vitepress'
@@ -109,6 +110,7 @@ export default defineConfig({
   title: 'bzsh-ui',
   description: 'Vue 3 component library scaffold',
   vite: {
+    plugins: [UnoCSS() as any],
     resolve: {
       alias: {
         '@bzsh-ui/components': fileURLToPath(

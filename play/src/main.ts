@@ -1,3 +1,4 @@
+import 'virtual:uno.css'
 import BzshUI from '@bzsh-ui/core'
 import { createApp } from 'vue'
 

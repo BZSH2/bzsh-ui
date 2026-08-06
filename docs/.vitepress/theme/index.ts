@@ -1,3 +1,4 @@
+import 'virtual:uno.css'
 import DefaultTheme from 'vitepress/theme'
 
 import 'element-plus/dist/index.css'
